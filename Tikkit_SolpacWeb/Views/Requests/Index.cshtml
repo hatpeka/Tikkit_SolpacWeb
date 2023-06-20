@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Tikkit_SolpacWeb.Models.Requests>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RequestDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RequestPerson)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Partner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoftwareProduct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProgramName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CurrentSituation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContentsOfRequest)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CorrectSituation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contact)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestPerson)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Partner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoftwareProduct)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProgramName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CurrentSituation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContentsOfRequest)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CorrectSituation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contact)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RequestNo">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.RequestNo">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RequestNo">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
