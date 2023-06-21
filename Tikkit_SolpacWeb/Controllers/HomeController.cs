@@ -13,6 +13,18 @@ namespace Tikkit_SolpacWeb.Controllers
             _logger = logger;
         }
 
+        public IActionResult Admin()
+        {
+            return View();
+        }
+        public IActionResult Staff()
+        {
+            return View();
+        }
+        public IActionResult Client()
+        {
+            return View();
+        }
         public IActionResult Index()
         {
             return View();

@@ -19,6 +19,30 @@ namespace Tikkit_SolpacWeb.Controllers
             _context = context;
         }
 
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Login(string email, string password)
+        {
+            var User = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (User != null && User.Email == email && User.Password == password)
+            {
+                if(User.Role == "admin")
+                {
+                    return RedirectToAction("Admin", "Home");
+                }
+                else if(User.Role == "staff")
+                {
+                    return RedirectToAction("Staff", "Home");
+                }
+                return RedirectToAction("Client", "Home");
+                
+            }
+            return RedirectToAction("Login");
+        }
+
         // GET: Users
         public async Task<IActionResult> Index()
         {
