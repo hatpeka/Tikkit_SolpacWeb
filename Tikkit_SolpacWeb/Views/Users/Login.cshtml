@@ -4,14 +4,74 @@
 @{
 }
 
-<form method="post" asp-controller="Users" asp-action="Login">
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="text" id="email" name="Email" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="Password" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            background-color: #ecf0f1;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #3498db;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .btn-login {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+            .btn-login:hover {
+                background-color: #2980b9;
+            }
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="post" asp-controller="Users" asp-action="Login">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password">
+
+        <input type="submit" value="Login" class="btn-login">
+    </form>
+</body>
+</html>

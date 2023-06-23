@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Tikkit_SolpacWeb.Models;
+using Microsoft.AspNetCore.Session;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -15,14 +16,17 @@ namespace Tikkit_SolpacWeb.Controllers
 
         public IActionResult Admin()
         {
+            ViewBag.UserName = TempData["UserName"];
             return View();
         }
         public IActionResult Staff()
         {
+            ViewBag.UserName = TempData["UserName"];
             return View();
         }
         public IActionResult Client()
         {
+            ViewBag.UserName = TempData["UserName"];
             return View();
         }
         public IActionResult Index()

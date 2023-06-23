@@ -2,6 +2,15 @@
 
 @{
     ViewData["Title"] = "Edit";
+    var currentUser = (Users)ViewData["CurrentUser"];
+    string backLinkText = currentUser.Role == "admin" ? "Back to List" : "Back to Home";
+    string backLinkAction = currentUser.Role switch
+    {
+        "admin" => "Index",
+        "staff" => "Staff",
+        "client" => "Client",
+        _ => "Home"
+    };
 }
 
 <h1>Edit</h1>
@@ -45,7 +54,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Home" asp-action="@backLinkAction">@backLinkText</a>
 </div>
 
 @section Scripts {

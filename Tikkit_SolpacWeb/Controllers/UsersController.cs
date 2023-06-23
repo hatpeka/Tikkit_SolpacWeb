@@ -20,6 +20,36 @@ namespace Tikkit_SolpacWeb.Controllers
             _context = context;
         }
 
+        private Users GetCurrentUser()
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+
+            if (string.IsNullOrEmpty(userEmail))
+                return null;
+
+            var currentUser = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            return currentUser;
+        }
+
+        public IActionResult UserAction()
+        {
+            var currentUser = GetCurrentUser();
+
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (currentUser.Role == "admin")
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return RedirectToAction("Edit", new { id = currentUser.ID });
+            }
+        }
+
         public IActionResult Login()
         {
             return View();
@@ -30,7 +60,11 @@ namespace Tikkit_SolpacWeb.Controllers
             var User = _context.Users.FirstOrDefault(u => u.Email == email);
             if (User != null && User.Email == email && User.Password == password)
             {
-                if(User.Role == "admin")
+                HttpContext.Session.SetString("UserEmail", User.Email);
+                HttpContext.Session.SetString("UserRole", User.Role);
+                string userName = User.Name;
+                TempData["UserName"] = userName;
+                if (User.Role == "admin")
                 {
                     return RedirectToAction("Admin", "Home");
                 }
@@ -44,7 +78,6 @@ namespace Tikkit_SolpacWeb.Controllers
             return RedirectToAction("Login");
         }
 
-        //[Authorize(Roles = "admin")]
         // GET: Users
         public async Task<IActionResult> Index()
         {
@@ -96,10 +129,13 @@ namespace Tikkit_SolpacWeb.Controllers
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var currentUser = GetCurrentUser();
             if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
+
+            ViewData["CurrentUser"] = currentUser;
 
             var users = await _context.Users.FindAsync(id);
             if (users == null)
@@ -139,7 +175,26 @@ namespace Tikkit_SolpacWeb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                var currentUser = GetCurrentUser();
+                if (currentUser == null)
+                {
+                    return NotFound();
+                }
+
+                // Redirect to the main page of the role after saving changes.
+                if (currentUser.Role == "admin")
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else if (currentUser.Role == "staff")
+                {
+                    return RedirectToAction("Staff", "Home");
+                }
+                else if (currentUser.Role == "client")
+                {
+                    return RedirectToAction("Client", "Home");
+                }
             }
             return View(users);
         }

@@ -2,10 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Tikkit_SolpacWeb.Data;
+using Microsoft.AspNetCore.Authorization;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Tikkit_SolpacWebContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Tikkit_SolpacWebContext") ?? throw new InvalidOperationException("Connection string 'Tikkit_SolpacWebContext' not found.")));
 
+builder.Services.AddSession(option =>
+{
+    option.IdleTimeout = TimeSpan.FromMinutes(30);
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("StaffAndClientOnly", policy => policy.RequireRole("Staff", "Client"));
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -28,7 +41,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 
-
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
