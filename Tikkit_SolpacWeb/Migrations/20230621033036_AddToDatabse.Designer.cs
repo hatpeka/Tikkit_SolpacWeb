@@ -12,8 +12,8 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    [Migration("20230616091844_AddToDatabase")]
-    partial class AddToDatabase
+    [Migration("20230621033036_AddToDatabse")]
+    partial class AddToDatabse
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,6 +81,9 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LogedIn")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

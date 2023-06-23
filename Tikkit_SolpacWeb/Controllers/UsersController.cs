@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,7 @@ namespace Tikkit_SolpacWeb.Controllers
             return RedirectToAction("Login");
         }
 
+        //[Authorize(Roles = "admin")]
         // GET: Users
         public async Task<IActionResult> Index()
         {
