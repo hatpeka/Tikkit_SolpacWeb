@@ -86,23 +86,6 @@ namespace Tikkit_SolpacWeb.Controllers
                           Problem("Entity set 'Tikkit_SolpacWebContext.Users'  is null.");
         }
 
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Users == null)
-            {
-                return NotFound();
-            }
-
-            var users = await _context.Users
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-
-            return View(users);
-        }
 
         // GET: Users/Create
         public IActionResult Create()
@@ -163,6 +146,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 {
                     _context.Update(users);
                     await _context.SaveChangesAsync();
+                    TempData["UserName"] = users.Name;
                 }
                 catch (DbUpdateConcurrencyException)
                 {

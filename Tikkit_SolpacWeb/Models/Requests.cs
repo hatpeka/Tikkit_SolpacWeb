@@ -4,8 +4,16 @@ namespace Tikkit_SolpacWeb.Models
 {
     public class Requests
     {
+        public enum RequestStatus
+        {
+            Pending,
+            Processing,
+            Done
+        }
+
         [Key]
         public int RequestNo { get; set; }
+        public string? Priority { get; set; }
         public DateTime RequestDate { get; set; } = DateTime.Now;
         public string? RequestPerson { get; set; }
         public string? Partner { get; set; }
@@ -17,6 +25,7 @@ namespace Tikkit_SolpacWeb.Models
         public string? CorrectSituation { get; set; }
         public string? Contact { get; set; }
         public string? Type { get; set; }
+        public RequestStatus Status { get; set; } = RequestStatus.Pending;
 
     }
 }
