@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Tikkit_SolpacWeb.Data;
 using Microsoft.AspNetCore.Authorization;
+using Tikkit_SolpacWeb.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Tikkit_SolpacWebContext>(options =>
@@ -28,6 +29,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie();
+
+builder.Services.AddTransient<EmailSender>();
 
 
 var app = builder.Build();

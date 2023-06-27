@@ -58,7 +58,7 @@ namespace Tikkit_SolpacWeb.Controllers
         public IActionResult Login(string email, string password)
         {
             var User = _context.Users.FirstOrDefault(u => u.Email == email);
-            if (User != null && User.Email == email && User.Password == password)
+            if (User != null && User.Email == email && User.Password == password && User.Status == "Working")
             {
                 HttpContext.Session.SetString("UserEmail", User.Email);
                 HttpContext.Session.SetString("UserRole", User.Role);
@@ -133,7 +133,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Email,Password,Role")] Users users)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Email,Password,Role, Status")] Users users)
         {
             if (id != users.ID)
             {

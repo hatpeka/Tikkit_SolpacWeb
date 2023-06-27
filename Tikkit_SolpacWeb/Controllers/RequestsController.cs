@@ -6,18 +6,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Tikkit_SolpacWeb.Data;
 using Tikkit_SolpacWeb.Models;
+using Tikkit_SolpacWeb.Services.Email;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
     public class RequestsController : Controller
     {
         private readonly Tikkit_SolpacWebContext _context;
+        private readonly EmailSender _emailSender;
 
-        public RequestsController(Tikkit_SolpacWebContext context)
+        public RequestsController(Tikkit_SolpacWebContext context, EmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
         // GET: Requests
@@ -63,6 +67,18 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
+
+                var staffEmails = _context.Users
+                    .Where(u => u.Role == "Staff")
+                    .Select(u => u.Email)
+                    .ToList();
+                
+                string emailSubject = $"New request: {requests.SoftwareProduct}";
+                string emailMessage = $"Client {requests.RequestPerson} has created a new request with the following details:\n\n{requests.ContentsOfRequest}";
+                foreach (string staffEmail in staffEmails)
+                {
+                    await _emailSender.SendEmailAsync(staffEmail, emailSubject, emailMessage);
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(requests);
