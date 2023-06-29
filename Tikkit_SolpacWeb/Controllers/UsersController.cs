@@ -60,10 +60,13 @@ namespace Tikkit_SolpacWeb.Controllers
             var User = _context.Users.FirstOrDefault(u => u.Email == email);
             if (User != null && User.Email == email && User.Password == password && User.Status == "Working")
             {
+                HttpContext.Session.SetInt32("UserId", User.ID);
                 HttpContext.Session.SetString("UserEmail", User.Email);
                 HttpContext.Session.SetString("UserRole", User.Role);
-                string userName = User.Name;
-                TempData["UserName"] = userName;
+                HttpContext.Session.SetString("UserName", User.Name);
+
+                string? userName = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = userName;
                 if (User.Role == "admin")
                 {
                     return RedirectToAction("Admin", "Home");
@@ -78,7 +81,9 @@ namespace Tikkit_SolpacWeb.Controllers
             return RedirectToAction("Login");
         }
 
+
         // GET: Users
+        [RequireLogin]
         public async Task<IActionResult> Index()
         {
               return _context.Users != null ? 
@@ -98,10 +103,11 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,Email,Password,Role")] Users users)
+        public async Task<IActionResult> Create([Bind("ID,Name,Partner,Address,Sex,Phone,Email,Password,RePassword,Role,Status")] Users users)
         {
             if (ModelState.IsValid)
             {
+                users.RePassword = null;
                 _context.Add(users);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -133,7 +139,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Email,Password,Role, Status")] Users users)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Partner,Address,Sex,Phone,Email,Password,RePassword,Role,Status")] Users users)
         {
             if (id != users.ID)
             {
@@ -142,11 +148,13 @@ namespace Tikkit_SolpacWeb.Controllers
 
             if (ModelState.IsValid)
             {
+                users.RePassword = null;
                 try
                 {
                     _context.Update(users);
                     await _context.SaveChangesAsync();
-                    TempData["UserName"] = users.Name;
+                    string? userName = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = userName;
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -218,6 +226,13 @@ namespace Tikkit_SolpacWeb.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserEmail");
+            HttpContext.Session.Remove("UserRole");
+            return RedirectToAction("Login");
         }
 
         private bool UsersExists(int id)

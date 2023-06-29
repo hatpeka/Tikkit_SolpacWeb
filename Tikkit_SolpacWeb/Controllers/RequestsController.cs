@@ -10,6 +10,7 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Tikkit_SolpacWeb.Data;
 using Tikkit_SolpacWeb.Models;
 using Tikkit_SolpacWeb.Services.Email;
+using Microsoft.AspNetCore.Http;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -25,11 +26,35 @@ namespace Tikkit_SolpacWeb.Controllers
         }
 
         // GET: Requests
+        [RequireLogin]
         public async Task<IActionResult> Index()
         {
-              return _context.Requests != null ? 
-                          View(await _context.Requests.ToListAsync()) :
-                          Problem("Entity set 'Tikkit_SolpacWebContext.Requests'  is null.");
+            string userRole = HttpContext.Session.GetString("Role");
+
+            if (userRole == "client")
+            {
+                var clientRequests = await _context.Requests.Select(r => new
+                {
+                    r.RequestDate,
+                    r.StartDate,
+                    r.DeadlineDate,
+                    r.EndDate,
+                    r.Project,
+                    r.RequestPerson,
+                    r.SubjectOfRequest,
+                    r.ContentsOfRequest,
+                    r.Priority,
+                    r.Reason,
+                    r.SupportContent,
+                    TotalTime = r.EndDate - r.StartDate
+                }).ToListAsync();
+
+                return View(clientRequests);
+            }
+
+            return _context.Requests != null ?
+                            View(await _context.Requests.ToListAsync()) :
+                            Problem("Entity set 'Tikkit_SolpacWebContext.Requests'  is null.");
         }
 
         // GET: Requests/Details/5
@@ -53,6 +78,12 @@ namespace Tikkit_SolpacWeb.Controllers
         // GET: Requests/Create
         public IActionResult Create()
         {
+            string userRole = HttpContext.Session.GetString("UserRole");
+            if (userRole == "staff")
+            {
+                return Forbid(); // Deny access to staff users
+            }
+
             return View();
         }
 
@@ -61,8 +92,14 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,RequestPerson,Partner,EndUser,SoftwareProduct,ProgramName,CurrentSituation,ContentsOfRequest,CorrectSituation,Contact,Type")] Requests requests)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
         {
+            string userRole = HttpContext.Session.GetString("Role");
+            if (userRole == "staff")
+            {
+                return Forbid(); // Deny access to staff users
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(requests);
@@ -72,8 +109,8 @@ namespace Tikkit_SolpacWeb.Controllers
                     .Where(u => u.Role == "Staff")
                     .Select(u => u.Email)
                     .ToList();
-                
-                string emailSubject = $"New request: {requests.SoftwareProduct}";
+
+                string emailSubject = $"New request: {requests.SubjectOfRequest}";
                 string emailMessage = $"Client {requests.RequestPerson} has created a new request with the following details:\n\n{requests.ContentsOfRequest}";
                 foreach (string staffEmail in staffEmails)
                 {
@@ -105,7 +142,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RequestNo,RequestDate,RequestPerson,Partner,EndUser,SoftwareProduct,ProgramName,CurrentSituation,ContentsOfRequest,CorrectSituation,Contact,Type")] Requests requests)
+        public async Task<IActionResult> Edit(int id, [Bind("RequestNo,RequestDate,RequestPerson,Partner,Project,SubjectOfRequest,ContentsOfRequest,Priority,Contact,Type")] Requests requests)
         {
             if (id != requests.RequestNo)
             {

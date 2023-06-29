@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tikkit_SolpacWeb.Data;
 
@@ -11,9 +12,10 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    partial class Tikkit_SolpacWebContextModelSnapshot : ModelSnapshot
+    [Migration("20230627070437_Isloggedin")]
+    partial class Isloggedin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,17 +38,14 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("ContentsOfRequest")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatePerson")
+                    b.Property<string>("CorrectSituation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeadlineDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("CurrentSituation")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpectedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("EndUser")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Partner")
                         .HasColumnType("nvarchar(max)");
@@ -54,10 +53,7 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("Priority")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Project")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Reason")
+                    b.Property<string>("ProgramName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RequestDate")
@@ -66,23 +62,11 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("RequestPerson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("SoftwareProduct")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<string>("SubjectOfRequest")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupportContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Supporter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<TimeSpan>("TotalTime")
-                        .HasColumnType("time");
 
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
@@ -100,19 +84,14 @@ namespace Tikkit_SolpacWeb.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsLoggedIn")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Partner")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -120,18 +99,7 @@ namespace Tikkit_SolpacWeb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RePassword")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Sex")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

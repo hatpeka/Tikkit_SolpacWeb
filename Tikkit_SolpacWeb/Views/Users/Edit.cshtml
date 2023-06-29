@@ -1,17 +1,5 @@
 ﻿@model Tikkit_SolpacWeb.Models.Users
 
-@{
-    ViewData["Title"] = "Edit";
-    var currentUser = (Users)ViewData["CurrentUser"];
-    string backLinkText = currentUser.Role == "admin" ? "Back to List" : "Back to Home";
-    string backLinkAction = currentUser.Role switch
-    {
-        "admin" => "Index",
-        "staff" => "Staff",
-        "client" => "Client",
-        _ => "Home"
-    };
-}
 
 <h1>Edit</h1>
 
@@ -28,6 +16,24 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Partner" class="control-label"></label>
+                <input asp-for="Partner" class="form-control" />
+                <span asp-validation-for="Partner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sex" class="control-label"></label>
+                <select asp-for="Sex" class="form-control">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <span asp-validation-for="Sex" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
@@ -36,6 +42,11 @@
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RePassword" class="control-label"></label>
+                <input asp-for="RePassword" class="form-control" />
+                <span asp-validation-for="RePassword" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Role" class="control-label"></label>
@@ -61,7 +72,7 @@
 </div>
 
 <div>
-    <a asp-controller="Home" asp-action="@backLinkAction">@backLinkText</a>
+    <a asp-action="Index">Back to list</a>
 </div>
 
 @section Scripts {

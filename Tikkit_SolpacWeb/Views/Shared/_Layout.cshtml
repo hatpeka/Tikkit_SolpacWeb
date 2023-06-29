@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http;
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,12 +10,70 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Tikkit_SolpacWeb.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/css/custom-layout.css" />
 </head>
 <body>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <div class="header">
+        <img class="logo" src="~/images/Logo Solpac Vn 2022 .png" alt="Your Logo" width="450" height="50" />
+        <div class="header-right">
+            @if (Context.Session.GetString("UserEmail") != null)
+            {
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle text-black" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @{
+                            string userName = TempData["UserName"] as string ?? "Người dùng";
+                        }
+                        @userName
+                    </button>
+                    <div class="dropdown-menu text-black" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" asp-controller="Users" asp-action="Edit" asp-route-id="@Context.Session.GetInt32("UserId")">Change password</a>
+                        <a class="dropdown-item" asp-controller="Users" asp-action="Logout">Đăng xuất</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a asp-controller="Users" asp-action="Login" class="nav-link">Đăng nhập</a>
+            }
+        </div>
+    </div>
+    <div class="sidebar">
+        
+        @{
+            var userRole = Context.Session.GetString("UserRole");
+        }
+        
+        @if (!string.IsNullOrEmpty(userRole))
+        {
+            <a class="text-black" asp-area="" asp-controller="Home" asp-action="Admin">Home</a>
+
+            if (userRole == "admin")
+            {
+                <a class="text-black" asp-area="" asp-controller="Users" asp-action="Index">User</a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create">Create Request</a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
+            }
+            else if (userRole == "staff")
+            {
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
+            }
+            else if (userRole == "client")
+            {
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create">Create Request</a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
+            }
+        }
+    </div>
+    <div class="content">
+        <div class="login-container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

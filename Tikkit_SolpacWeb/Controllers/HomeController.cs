@@ -14,19 +14,26 @@ namespace Tikkit_SolpacWeb.Controllers
             _logger = logger;
         }
 
+        [RequireLogin]
         public IActionResult Admin()
         {
-            ViewBag.UserName = TempData["UserName"];
+            string? userName = HttpContext.Session.GetString("UserName");
+            ViewBag.UserName = userName;
             return View();
         }
+        [RequireLogin]
         public IActionResult Staff()
         {
-            ViewBag.UserName = TempData["UserName"];
+            string? userName = HttpContext.Session.GetString("UserName");
+            ViewBag.UserName = userName;
             return View();
         }
+        [RequireLogin]
+
         public IActionResult Client()
         {
-            ViewBag.UserName = TempData["UserName"];
+            string? userName = HttpContext.Session.GetString("UserName");
+            ViewBag.UserName = userName;
             return View();
         }
         public IActionResult Index()

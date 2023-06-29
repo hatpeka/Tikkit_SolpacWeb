@@ -1,4 +1,17 @@
 ﻿@model IEnumerable<Tikkit_SolpacWeb.Models.Requests>
+@using System.Text.RegularExpressions;
+
+@functions {
+    public static string ExtractPhoneNumber(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+
+        var regex = new Regex(@"\d+");
+        var match = regex.Match(input);
+
+        return match.Success ? match.Value : string.Empty;
+    }
+}
 
 @{
     ViewData["Title"] = "Index";
@@ -6,9 +19,6 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -19,31 +29,28 @@
                 @Html.DisplayNameFor(model => model.RequestPerson)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Partner)
+                @Html.DisplayNameFor(model => model.Priority)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EndUser)
+                @Html.DisplayNameFor(model => model.Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SoftwareProduct)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProgramName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CurrentSituation)
+                @Html.DisplayNameFor(model => model.SubjectOfRequest)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ContentsOfRequest)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CorrectSituation)
+                @Html.DisplayNameFor(model => model.Reason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupportContent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalTime)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Contact)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
             </th>
             <th></th>
         </tr>
@@ -58,35 +65,42 @@
                 @Html.DisplayFor(modelItem => item.RequestPerson)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Partner)
+                @Html.DisplayFor(modelItem => item.Priority)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EndUser)
+                @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SoftwareProduct)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProgramName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CurrentSituation)
+                @Html.DisplayFor(modelItem => item.SubjectOfRequest)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ContentsOfRequest)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CorrectSituation)
+                @Html.DisplayFor(modelItem => item.Reason)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Contact)
+                @Html.DisplayFor(modelItem => item.SupportContent)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Type)
+                @Html.DisplayFor(modelItem => item.TotalTime)
             </td>
+                <td>
+                    @{
+                        var phoneNumber = ExtractPhoneNumber(item.Contact);
+                        var zaloLink = $"https://zalo.me/{phoneNumber}";
+                    }
+                    @if (!string.IsNullOrEmpty(phoneNumber))
+                    {
+                        <a href="@zaloLink" target="_blank">Zalo</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Contact)
+                    }
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.RequestNo">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RequestNo">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.RequestNo">Delete</a>
             </td>
         </tr>
