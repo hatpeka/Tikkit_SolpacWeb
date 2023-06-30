@@ -29,32 +29,11 @@ namespace Tikkit_SolpacWeb.Controllers
         [RequireLogin]
         public async Task<IActionResult> Index()
         {
-            string userRole = HttpContext.Session.GetString("Role");
+            string userRole = HttpContext.Session.GetString("UserRole");
 
-            if (userRole == "client")
-            {
-                var clientRequests = await _context.Requests.Select(r => new
-                {
-                    r.RequestDate,
-                    r.StartDate,
-                    r.DeadlineDate,
-                    r.EndDate,
-                    r.Project,
-                    r.RequestPerson,
-                    r.SubjectOfRequest,
-                    r.ContentsOfRequest,
-                    r.Priority,
-                    r.Reason,
-                    r.SupportContent,
-                    TotalTime = r.EndDate - r.StartDate
-                }).ToListAsync();
+            ViewBag.UserRole = userRole;
 
-                return View(clientRequests);
-            }
-
-            return _context.Requests != null ?
-                            View(await _context.Requests.ToListAsync()) :
-                            Problem("Entity set 'Tikkit_SolpacWebContext.Requests'  is null.");
+            return View(await _context.Requests.ToListAsync());
         }
 
         // GET: Requests/Details/5
@@ -79,7 +58,7 @@ namespace Tikkit_SolpacWeb.Controllers
         public IActionResult Create()
         {
             string userRole = HttpContext.Session.GetString("UserRole");
-            if (userRole == "staff")
+            if (userRole == "Staff")
             {
                 return Forbid(); // Deny access to staff users
             }
@@ -95,13 +74,14 @@ namespace Tikkit_SolpacWeb.Controllers
         public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
         {
             string userRole = HttpContext.Session.GetString("Role");
-            if (userRole == "staff")
+            if (userRole == "Staff")
             {
                 return Forbid(); // Deny access to staff users
             }
 
             if (ModelState.IsValid)
             {
+                requests.CreatePerson = HttpContext.Session.GetString("UserName");
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
@@ -122,7 +102,7 @@ namespace Tikkit_SolpacWeb.Controllers
         }
 
         // GET: Requests/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditforStaff(int? id)
         {
             if (id == null || _context.Requests == null)
             {
@@ -142,7 +122,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RequestNo,RequestDate,RequestPerson,Partner,Project,SubjectOfRequest,ContentsOfRequest,Priority,Contact,Type")] Requests requests)
+        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
         {
             if (id != requests.RequestNo)
             {
@@ -171,6 +151,7 @@ namespace Tikkit_SolpacWeb.Controllers
             }
             return View(requests);
         }
+
 
         // GET: Requests/Delete/5
         public async Task<IActionResult> Delete(int? id)

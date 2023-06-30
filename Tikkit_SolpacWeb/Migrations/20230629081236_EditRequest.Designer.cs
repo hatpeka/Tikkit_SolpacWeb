@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tikkit_SolpacWeb.Data;
 
@@ -11,9 +12,10 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    partial class Tikkit_SolpacWebContextModelSnapshot : ModelSnapshot
+    [Migration("20230629081236_EditRequest")]
+    partial class EditRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,10 +41,13 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("CreatePerson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateTime>("DeadlineDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ExpectedDate")
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpectedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Partner")
@@ -63,19 +68,22 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("RequestPerson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("StartDate")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubjectOfRequest")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SupportContent")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Supporter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("TotalTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RequestNo");

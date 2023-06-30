@@ -40,7 +40,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 return RedirectToAction("Login");
             }
 
-            if (currentUser.Role == "admin")
+            if (currentUser.Role == "Admin")
             {
                 return RedirectToAction("Index");
             }
@@ -67,11 +67,11 @@ namespace Tikkit_SolpacWeb.Controllers
 
                 string? userName = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = userName;
-                if (User.Role == "admin")
+                if (User.Role == "Admin")
                 {
                     return RedirectToAction("Admin", "Home");
                 }
-                else if(User.Role == "staff")
+                else if(User.Role == "Staff")
                 {
                     return RedirectToAction("Staff", "Home");
                 }
@@ -148,9 +148,9 @@ namespace Tikkit_SolpacWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                users.RePassword = null;
                 try
                 {
+                    users.RePassword = null;
                     _context.Update(users);
                     await _context.SaveChangesAsync();
                     string? userName = HttpContext.Session.GetString("UserName");
@@ -175,15 +175,15 @@ namespace Tikkit_SolpacWeb.Controllers
                 }
 
                 // Redirect to the main page of the role after saving changes.
-                if (currentUser.Role == "admin")
+                if (currentUser.Role == "Admin")    
                 {
                     return RedirectToAction(nameof(Index));
                 }
-                else if (currentUser.Role == "staff")
+                else if (currentUser.Role == "Staff")
                 {
                     return RedirectToAction("Staff", "Home");
                 }
-                else if (currentUser.Role == "client")
+                else if (currentUser.Role == "Client")
                 {
                     return RedirectToAction("Client", "Home");
                 }

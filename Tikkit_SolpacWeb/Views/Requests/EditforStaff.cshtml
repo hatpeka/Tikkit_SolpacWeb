@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="EditforStaff">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="RequestNo" />
 
@@ -47,8 +47,8 @@
             <div class="form-group">
                 <label asp-for="Priority" class="control-label"></label>
                 <select asp-for="Priority" class="form-control">
-                    <option value="normal">Normal</option>
-                    <option value="urgent">Urgent</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Urgent">Urgent</option>
                 </select>
                 <span asp-validation-for="Priority" class="text-danger"></span>
             </div>
@@ -56,15 +56,6 @@
                 <label asp-for="Contact" class="control-label"></label>
                 <input asp-for="Contact" class="form-control" />
                 <span asp-validation-for="Contact" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Type" class="control-label"></label>
-                <select asp-for="Type" class="form-control">
-                    <option value="edit">Edit</option>
-                    <option value="findreason">Find reason</option>
-                    <option value="manipulate">Manipulate instructions</option>
-                </select>
-                <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

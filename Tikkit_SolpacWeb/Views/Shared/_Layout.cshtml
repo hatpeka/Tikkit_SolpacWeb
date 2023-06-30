@@ -51,17 +51,17 @@
         {
             <a class="text-black" asp-area="" asp-controller="Home" asp-action="Admin">Home</a>
 
-            if (userRole == "admin")
+            if (userRole == "Admin")
             {
                 <a class="text-black" asp-area="" asp-controller="Users" asp-action="Index">User</a>
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create">Create Request</a>
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
             }
-            else if (userRole == "staff")
+            else if (userRole == "Staff")
             {
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
             }
-            else if (userRole == "client")
+            else if (userRole == "Client")
             {
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create">Create Request</a>
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>

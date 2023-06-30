@@ -19,75 +19,92 @@
 
 <h1>Index</h1>
 
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.RequestDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RequestPerson)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Priority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubjectOfRequest)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContentsOfRequest)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reason)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SupportContent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Contact)
-            </th>
             <th></th>
+            <th></th>
+            <th>Request Date</th>
+            @if (ViewBag.UserRole == "Client" || ViewBag.UserRole == "Admin")
+            {
+                <th>Request Person</th>
+            }
+            <th>Start Date</th>
+            <th>Start Time</th>
+            <th>Expected Date</th>
+            <th>End Time</th>
+            <th>End Date</th>
+            @if (ViewBag.UserRole == "Staff")
+            {
+                <th>Partner</th>
+                <th>Project</th>
+                <th>Request Person</th>
+                <th>Create Person</th>
+            }
+            <th>Priority</th>
+            <th>Subject of Request</th>
+            <th>Contents of Request</th>
+            <th>Image</th>
+            <th>Reason</th>
+            <th>Support Content</th>
+            <th>Total Time</th>
+            @if (ViewBag.UserRole == "Staff")
+            {
+                <th>Supporter</th>
+            }
+            <th>Status</th>
+            @if (ViewBag.UserRole == "Staff")
+            {
+                <th>Contact</th>
+            }
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequestDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequestPerson)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Priority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubjectOfRequest)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContentsOfRequest)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reason)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SupportContent)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalTime)
-            </td>
+        @{
+            int order = 1;
+        }
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@request.RequestNo">Details</a>
+                </td>
+                <td>@order</td>
+                <td>@request.RequestDate.ToString("MM-dd")</td>
+                @if (ViewBag.UserRole == "Client" || ViewBag.UserRole == "Admin")
+                {
+                    <td>@request.RequestPerson</td>
+                }
+                <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("MM-dd") : "")</td>
+                <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("HH:mm") : "")</td>
+                <td>@(request.ExpectedDate != DateTime.MinValue ? request.ExpectedDate.ToString() : "")</td>
+                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("MM-dd") : "")</td>
+                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("HH:mm") : "")</td>
+                @if (ViewBag.UserRole == "Staff")
+                {
+                    <td>@request.Partner</td>
+                    <td>@request.Project</td>
+                    <td>@request.RequestPerson</td>
+                    <td>@request.CreatePerson</td>
+                }
+                <td>@request.Priority</td>
+                <td>@request.SubjectOfRequest</td>
+                <td>@request.ContentsOfRequest</td>
+                <td>Ảnh</td>
+                <td>@request.Reason</td>
+                <td>@request.SupportContent</td>
+                <td>@request.TotalTime</td>
+                @if (ViewBag.UserRole == "Staff")
+                {
+                    <td>@request.Supporter</td>
+                }
+                <td>@request.Status</td>
+                @if (ViewBag.UserRole == "Staff")
+                {
                 <td>
                     @{
-                        var phoneNumber = ExtractPhoneNumber(item.Contact);
+                        var phoneNumber = ExtractPhoneNumber(request.Contact);
                         var zaloLink = $"https://zalo.me/{phoneNumber}";
                     }
                     @if (!string.IsNullOrEmpty(phoneNumber))
@@ -96,14 +113,15 @@
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.Contact)
+                        @Html.DisplayFor(modelItem => request.Contact)
                     }
                 </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RequestNo">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.RequestNo">Delete</a>
-            </td>
-        </tr>
-}
+                }
+                <td>
+                    <a asp-action="EditforStaff" asp-route-id="@request.RequestNo">Edit</a>
+                </td>
+            </tr>
+            order++;
+        }
     </tbody>
 </table>
