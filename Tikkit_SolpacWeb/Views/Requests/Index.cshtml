@@ -99,7 +99,18 @@
                 {
                     <td>@request.Supporter</td>
                 }
-                <td>@request.Status</td>
+                <td>
+                    @if (ViewBag.UserRole == "Staff")
+                    {
+                        <form asp-action="Response" asp-route-id="@request.RequestNo" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-primary">@request.Status</button>
+                        </form>
+                    }
+                    else
+                    {
+                        @request.Status
+                    }
+                </td>                
                 @if (ViewBag.UserRole == "Staff")
                 {
                 <td>

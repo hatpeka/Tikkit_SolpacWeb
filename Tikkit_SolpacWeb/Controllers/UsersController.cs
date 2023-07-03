@@ -65,8 +65,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 HttpContext.Session.SetString("UserRole", User.Role);
                 HttpContext.Session.SetString("UserName", User.Name);
 
-                string? userName = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = userName;
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 if (User.Role == "Admin")
                 {
                     return RedirectToAction("Admin", "Home");

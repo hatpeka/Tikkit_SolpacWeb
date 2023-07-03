@@ -190,6 +190,108 @@ namespace Tikkit_SolpacWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Requests/Response/5
+        public async Task<IActionResult> Response(int? id)
+        {
+            if (id == null || _context.Requests == null)
+            {
+                return NotFound();
+            }
+
+            var request = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            return View(request);
+        }
+
+        // POST: Requests/Response/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Response(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent")] Requests request)
+        {
+            if (id != request.RequestNo)
+            {
+                return NotFound();
+            }
+
+            if (_context.Requests == null)
+            {
+                return Problem("Entity set 'Tikkit_SolpacWebContext.Requests'  is null.");
+            }
+
+            var existingRequest = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
+            if (existingRequest == null)
+            {
+                return NotFound();
+            }
+
+
+            if (ModelState.IsValid)
+            {
+                if (existingRequest.Status == "Pending")
+                {
+                    existingRequest.Status = "Processing";
+                    existingRequest.Supporter = HttpContext.Session.GetString("UserName");
+                    existingRequest.StartDate = DateTime.Now;
+                    existingRequest.ExpectedDate = request.ExpectedDate;
+                    existingRequest.Reason = request.Reason;
+                    existingRequest.SupportContent = request.SupportContent;
+
+                    try
+                    {
+                        _context.Update(existingRequest);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!RequestsExists(existingRequest.RequestNo))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else if(existingRequest.Status == "Processing")
+                {
+                    existingRequest.Status = "Done";
+                    existingRequest.EndDate = DateTime.Now;
+                    existingRequest.Reason = request.Reason;
+                    existingRequest.SupportContent = request.SupportContent;
+
+
+                    try
+                    {
+                        _context.Update(existingRequest);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!RequestsExists(existingRequest.RequestNo))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            return View(request);
+        }
+
         private bool RequestsExists(int id)
         {
           return (_context.Requests?.Any(e => e.RequestNo == id)).GetValueOrDefault();

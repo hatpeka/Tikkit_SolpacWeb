@@ -66,8 +66,8 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubjectOfRequest")
                         .HasColumnType("nvarchar(max)");

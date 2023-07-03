@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tikkit_SolpacWeb.Migrations
 {
-    public partial class AddToDatabse : Migration
+    public partial class Cretee : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,16 +16,21 @@ namespace Tikkit_SolpacWeb.Migrations
                     RequestNo = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExpectedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RequestPerson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatePerson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Supporter = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Partner = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EndUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SoftwareProduct = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProgramName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CurrentSituation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Project = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubjectOfRequest = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ContentsOfRequest = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CorrectSituation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SupportContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Contact = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,10 +44,15 @@ namespace Tikkit_SolpacWeb.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Partner = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sex = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RePassword = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LogedIn = table.Column<bool>(type: "bit", nullable: false)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

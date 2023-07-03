@@ -12,8 +12,8 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    [Migration("20230629032530_Useredit")]
-    partial class Useredit
+    [Migration("20230630083308_Cretee")]
+    partial class Cretee
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,13 +41,10 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("CreatePerson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeadlineDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpectedDate")
+                    b.Property<DateTime?>("ExpectedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Partner")
@@ -68,11 +65,11 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("RequestPerson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubjectOfRequest")
                         .HasColumnType("nvarchar(max)");
@@ -81,12 +78,6 @@ namespace Tikkit_SolpacWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Supporter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<TimeSpan>("TotalTime")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RequestNo");

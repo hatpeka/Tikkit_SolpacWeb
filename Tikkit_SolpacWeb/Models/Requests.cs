@@ -5,12 +5,6 @@ namespace Tikkit_SolpacWeb.Models
 {
     public class Requests
     {
-        public enum RequestStatus
-        {
-            Pending,
-            Processing,
-            Done
-        }
 
         [Key]
         public int RequestNo { get; set; }
@@ -55,6 +49,6 @@ namespace Tikkit_SolpacWeb.Models
         public string? Reason { get; set; }
         public string? SupportContent { get; set; }
         public string? Contact { get; set; }
-        public RequestStatus Status { get; set; } = RequestStatus.Pending;
+        public string? Status { get; set; } = "Pending";
     }
 }
