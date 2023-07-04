@@ -30,13 +30,19 @@ namespace Tikkit_SolpacWeb.Controllers
         public async Task<IActionResult> Index()
         {
             string userRole = HttpContext.Session.GetString("UserRole");
-            string currentUserName = HttpContext.Session.GetString("UserName");
+            string userName = HttpContext.Session.GetString("UserName");
 
             ViewBag.UserRole = userRole;
 
-            var requests = await _context.Requests.Where(r => r.CreatePerson == currentUserName).ToListAsync();
-
-            return View(requests);
+            if(userRole == "Staff")
+            {
+                return View(await _context.Requests.ToListAsync());
+            }
+            else
+            {
+                var requests = await _context.Requests.Where(r => r.CreatePerson == userName).ToListAsync();
+                return View(requests);
+            }
         }
 
 
