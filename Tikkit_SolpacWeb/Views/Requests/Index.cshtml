@@ -20,7 +20,7 @@
 <h1>Index</h1>
 
 
-<table class="table">
+<table class="table bordered-table">
     <thead>
         <tr>
             <th></th>
@@ -64,11 +64,24 @@
         @{
             int order = 1;
         }
-        @foreach (var request in Model)
+        @foreach (var request in Model.OrderByDescending(r => r.RequestDate))
         {
-            <tr>
+            string backgroundColor = "";
+            switch (request.Status)
+            {
+                case "Pending":
+                    backgroundColor = "#FCD5B4";
+                    break;
+                case "Processing":
+                    backgroundColor = "#F2CF59";
+                    break;
+                case "Done":
+                    backgroundColor = "#B5DDD1";
+                    break;
+            }
+            <tr style="background-color: @backgroundColor">
                 <td>
-                    <a asp-action="Details" asp-route-id="@request.RequestNo">Details</a>
+                    <a asp-action="Details" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Details">Details</a>
                 </td>
                 <td>@order</td>
                 <td>@request.RequestDate.ToString("MM-dd")</td>
@@ -78,9 +91,9 @@
                 }
                 <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("MM-dd") : "")</td>
                 <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("HH:mm") : "")</td>
-                <td>@(request.ExpectedDate != DateTime.MinValue ? request.ExpectedDate.ToString() : "")</td>
-                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("MM-dd") : "")</td>
+                <td>@(request.ExpectedDate.HasValue && request.ExpectedDate.Value != DateTime.MinValue ? request.ExpectedDate.Value.ToString("MM-dd") : "")</td>
                 <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("HH:mm") : "")</td>
+                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("MM-dd") : "")</td>
                 @if (ViewBag.UserRole == "Staff")
                 {
                     <td>@request.Partner</td>
@@ -100,11 +113,16 @@
                     <td>@request.Supporter</td>
                 }
                 <td>
-                    @if (ViewBag.UserRole == "Staff")
+                    @if (@request.Status != "Done")
                     {
-                        <form asp-action="Response" asp-route-id="@request.RequestNo" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-primary">@request.Status</button>
-                        </form>
+                        @if (ViewBag.UserRole == "Staff")
+                        {
+                            <a asp-action="StaffResponse" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Response">@request.Status</a>
+                        }
+                        else
+                        {
+                            @request.Status
+                        }
                     }
                     else
                     {
@@ -129,10 +147,43 @@
                 </td>
                 }
                 <td>
-                    <a asp-action="EditforStaff" asp-route-id="@request.RequestNo">Edit</a>
+                    <a asp-action="EditforStaff" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Edit">Edit</a>
                 </td>
             </tr>
             order++;
         }
     </tbody>
 </table>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("a[data-toggle='modal']").on("click", function (e) {
+            e.preventDefault();
+            var url = $(this).attr("href");
+            var title = $(this).data("title");
+            $("#myModalLabel").text(title);
+            $("#myModal .modal-body").load(url, function () {
+                $("#myModal").modal("show");
+            });
+        });
+    });
+</script>

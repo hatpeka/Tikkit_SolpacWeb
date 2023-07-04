@@ -23,16 +23,17 @@ namespace Tikkit_SolpacWeb.Models
         public DateTime? StartDate { get; set; }
         public DateTime? ExpectedDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public TimeSpan TotalTime
+        public string TotalTime
         {
             get
             {
                 if (StartDate.HasValue && EndDate.HasValue)
                 {
-                    return EndDate.Value - StartDate.Value;
+                    TimeSpan totalTime = EndDate.Value - StartDate.Value;
+                    return $"{totalTime.Hours}h:{totalTime.Minutes}m:{totalTime.Seconds}s";
                 }
 
-                return TimeSpan.Zero;
+                return "0h:0m:0s";
             }
         }
         public string? Priority { get; set; }

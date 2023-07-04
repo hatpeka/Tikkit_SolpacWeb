@@ -57,7 +57,7 @@ boydy{
 
     .sidebar a {
         display: block;
-        color: white;
+        color: black;
         text-decoration: none;
         padding: 8px 16px;
         margin-bottom: 10px;
@@ -73,3 +73,20 @@ boydy{
     margin-top: 60px;
     padding: 10px;
 }
+
+
+.bordered-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.bordered-table th,
+.bordered-table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+    width: 60%;
+}
+
+
+

@@ -64,6 +64,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 HttpContext.Session.SetString("UserEmail", User.Email);
                 HttpContext.Session.SetString("UserRole", User.Role);
                 HttpContext.Session.SetString("UserName", User.Name);
+                HttpContext.Session.SetString("Partner", User.Partner);
 
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 if (User.Role == "Admin")

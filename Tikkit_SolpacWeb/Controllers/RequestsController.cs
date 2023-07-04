@@ -30,11 +30,15 @@ namespace Tikkit_SolpacWeb.Controllers
         public async Task<IActionResult> Index()
         {
             string userRole = HttpContext.Session.GetString("UserRole");
+            string currentUserName = HttpContext.Session.GetString("UserName");
 
             ViewBag.UserRole = userRole;
 
-            return View(await _context.Requests.ToListAsync());
+            var requests = await _context.Requests.Where(r => r.CreatePerson == currentUserName).ToListAsync();
+
+            return View(requests);
         }
+
 
         // GET: Requests/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -51,7 +55,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 return NotFound();
             }
 
-            return View(requests);
+            return PartialView("_DetailsPartial",requests);
         }
 
         // GET: Requests/Create
@@ -82,6 +86,7 @@ namespace Tikkit_SolpacWeb.Controllers
             if (ModelState.IsValid)
             {
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
+                requests.Partner = HttpContext.Session.GetString("Partner");
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
@@ -114,7 +119,7 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 return NotFound();
             }
-            return View(requests);
+            return PartialView("_EditforStaffPartial",requests);
         }
 
         // POST: Requests/Edit/5
@@ -191,7 +196,7 @@ namespace Tikkit_SolpacWeb.Controllers
         }
 
         // GET: Requests/Response/5
-        public async Task<IActionResult> Response(int? id)
+        public async Task<IActionResult> StaffResponse(int? id)
         {
             if (id == null || _context.Requests == null)
             {
@@ -205,13 +210,13 @@ namespace Tikkit_SolpacWeb.Controllers
                 return NotFound();
             }
 
-            return View(request);
+            return PartialView("_StaffResponsePartial",request);
         }
 
         // POST: Requests/Response/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Response(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent")] Requests request)
+        public async Task<IActionResult> StaffResponse(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent")] Requests request)
         {
             if (id != request.RequestNo)
             {
@@ -263,7 +268,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 else if(existingRequest.Status == "Processing")
                 {
                     existingRequest.Status = "Done";
-                    existingRequest.EndDate = DateTime.Now;
+                    existingRequest.EndDate = DateTime.Now; 
                     existingRequest.Reason = request.Reason;
                     existingRequest.SupportContent = request.SupportContent;
 
