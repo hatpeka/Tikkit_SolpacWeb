@@ -85,8 +85,12 @@ boydy{
     border: 1px solid black;
     padding: 8px;
     text-align: left;
-    width: 60%;
 }
+
+    .bordered-table th {
+        padding: 4px 8px;
+        min-width: 120px;
+    }
 
 
 

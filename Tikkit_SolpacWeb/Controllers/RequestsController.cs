@@ -27,22 +27,27 @@ namespace Tikkit_SolpacWeb.Controllers
 
         // GET: Requests
         [RequireLogin]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
         {
             string userRole = HttpContext.Session.GetString("UserRole");
             string userName = HttpContext.Session.GetString("UserName");
-
+            var requests = _context.Requests.AsQueryable();
             ViewBag.UserRole = userRole;
 
-            if(userRole == "Staff")
-            {
-                return View(await _context.Requests.ToListAsync());
-            }
-            else
-            {
-                var requests = await _context.Requests.Where(r => r.CreatePerson == userName).ToListAsync();
-                return View(requests);
-            }
+            requests = requests.Where(r =>
+                (userRole == "Staff" || r.CreatePerson == userName) &&
+                (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
+                (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
+                (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
+                (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
+                (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
+                (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
+                (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
+                (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
+            );
+
+            return View(await requests.ToListAsync());
         }
 
 
