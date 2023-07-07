@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Tikkit_SolpacWeb.Data;
 using Microsoft.AspNetCore.Authorization;
 using Tikkit_SolpacWeb.Services.Email;
+using OfficeOpenXml;
+
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Tikkit_SolpacWebContext>(options =>

@@ -30,7 +30,10 @@
         <option value="Normal" selected="@(prioritySelected == "Normal")">Normal</option>
         <option value="Urgent" selected="@(prioritySelected == "Urgent")">Urgent</option>
     </select>
-    <input class="form-control mr-sm-2" type="text" name="createPerson" placeholder="Create Person" aria-label="Create Person" value="@Context.Request.Query["createPerson"]">
+    @if(ViewBag.UserRole == "Staff")
+    {
+        <input class="form-control mr-sm-2" type="text" name="createPerson" placeholder="Create Person" aria-label="Create Person" value="@Context.Request.Query["createPerson"]">
+    }
     <input class="form-control mr-sm-2" type="text" name="project" placeholder="Project" aria-label="Project" value="@Context.Request.Query["project"]">
     <select class="form-control mr-sm-2" name="status">
         <option value="" selected="@(string.IsNullOrEmpty(statusSelected))">Status</option>
@@ -41,9 +44,13 @@
     <input class="form-control mr-sm-2" type="text" name="supporter" placeholder="Supporter" aria-label="Supporter" value="@Context.Request.Query["supporter"]">
     <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["search"]">
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+
 </form>
 
+
     
+<br />
+    <a class="btn btn-outline-info" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Export</a>
 <br />
 <br />
 
