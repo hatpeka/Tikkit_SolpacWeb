@@ -19,15 +19,16 @@ namespace Tikkit_SolpacWeb.Controllers
     {
         private readonly Tikkit_SolpacWebContext _context;
         private readonly EmailSender _emailSender;
-
-        public RequestsController(Tikkit_SolpacWebContext context, EmailSender emailSender)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        public RequestsController(Tikkit_SolpacWebContext context, EmailSender emailSender, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
             _emailSender = emailSender;
+            _hostingEnvironment = hostingEnvironment;
         }
 
-// GET: Requests
-[RequireLogin]
+        // GET: Requests
+        [RequireLogin]
 public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
 {
     string userRole = HttpContext.Session.GetString("UserRole");
@@ -87,7 +88,7 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile ImagePath)
         {
             string userRole = HttpContext.Session.GetString("Role");
             if (userRole == "Staff")
@@ -97,6 +98,17 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
 
             if (ModelState.IsValid)
             {
+                if (ImagePath != null && ImagePath.Length > 0)
+                {
+                    string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ImagePath.FileName);
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImagePath.CopyToAsync(fileStream);
+                    }
+                    requests.ImagePath = "/uploads/" + uniqueFileName;
+                }
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
                 requests.Partner = HttpContext.Session.GetString("Partner");
                 _context.Add(requests);

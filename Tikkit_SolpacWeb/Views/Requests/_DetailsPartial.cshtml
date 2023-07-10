@@ -22,6 +22,17 @@
 
                 <dt>@Html.DisplayNameFor(model => model.ContentsOfRequest)</dt>
                 <dd>@Html.DisplayFor(model => model.ContentsOfRequest)</dd>
+
+                <dt>@Html.DisplayNameFor(model => model.ImagePath)</dt>
+                <dd>
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="@Model.ImagePath" alt="Uploaded image" style="max-width: 100%; height:auto; cursor: pointer;" class="thumbnail" data-imagepath="@Model.ImagePath" />
+                    }
+                    else
+                    {
+                        <p>No image uploaded</p>
+                    }
             </dl>
         </div>
         <div class="col-md-6">
@@ -47,3 +58,49 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Full-size image</h5>
+            </div>
+            <div class="modal-body">
+                <img id="fullSizeImage" src="" alt="Full-size image" style="width: 100%; height: auto;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("a[data-toggle='modal']").on("click", function (e) {
+            e.preventDefault();
+            var url = $(this).attr("href");
+            var title = $(this).data("title");
+            $("#myModalLabel").text(title);
+            // Xóa nội dung cũ trước khi tải nội dung mới
+            $("#myModal .modal-body").empty();
+            $("#myModal .modal-body").load(url, function () {
+                $("#myModal").modal("show");
+            });
+        });
+
+        $(document).on("click", ".thumbnail", function () {
+            var imagePath = $(this).data("imagepath");
+            $("#fullSizeImage").attr("src", imagePath);
+            $("#imageModal").modal("show");
+        });
+
+        $("#imageModal").on("hidden.bs.modal", function () {
+            $("#fullSizeImage").attr("src", "");
+        });
+    });
+</script>

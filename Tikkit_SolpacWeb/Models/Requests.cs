@@ -47,6 +47,7 @@ namespace Tikkit_SolpacWeb.Models
         public string? SubjectOfRequest { get; set; }
 
         public string? ContentsOfRequest { get; set; }
+        public string? ImagePath { get; set; }
         public string? Reason { get; set; }
         public string? SupportContent { get; set; }
         public string? Contact { get; set; }

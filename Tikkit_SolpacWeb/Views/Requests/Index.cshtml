@@ -65,9 +65,14 @@
                 <th>Request Person</th>
             }
             <th>Start Date</th>
-            <th>Start Time</th>
-            <th>Expected Date</th>
-            <th>End Time</th>
+            @if (ViewBag.UserRole == "Staff")
+            {
+                <th>Start Time</th>
+            }
+            <th>Expected Date</th>@if (ViewBag.UserRole == "Staff")
+            {
+                <th>End Time</th>
+            }
             <th>End Date</th>
             @if (ViewBag.UserRole == "Staff")
             {
@@ -79,8 +84,11 @@
             <th>Priority</th>
             <th>Subject of Request</th>
             <th>Contents of Request</th>
-            <th>Image</th>
-            <th>Reason</th>
+            @if (ViewBag.UserRole == "Staff")
+            {
+                <th>Image</th>
+                <th>Reason</th>
+            }
             <th>Support Content</th>
             <th>Total Time</th>
             @if (ViewBag.UserRole == "Staff")
@@ -124,9 +132,15 @@
                     <td>@request.RequestPerson</td>
                 }
                 <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("dd-MM") : "")</td>
-                <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("HH:mm") : "")</td>
+                @if (ViewBag.UserRole == "Staff")
+                {
+                    <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("HH:mm") : "")</td>
+                }
                 <td>@(request.ExpectedDate.HasValue && request.ExpectedDate.Value != DateTime.MinValue ? request.ExpectedDate.Value.ToString("dd-MM") : "")</td>
-                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("HH:mm") : "")</td>
+                @if (ViewBag.UserRole == "Staff")
+                {
+                    <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("HH:mm") : "")</td>
+                }
                 <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("dd-MM") : "")</td>
                 @if (ViewBag.UserRole == "Staff")
                 {
@@ -138,8 +152,20 @@
                 <td>@request.Priority</td>
                 <td>@request.SubjectOfRequest</td>
                 <td>@request.ContentsOfRequest</td>
-                <td>Ảnh</td>
-                <td>@request.Reason</td>
+                @if (ViewBag.UserRole == "Staff")
+                {
+                    <td>
+                        @if (!string.IsNullOrEmpty(request.ImagePath))
+                        {
+                            <img src="@request.ImagePath" alt="Uploaded image" style="max-width: 100%; height:auto; cursor: pointer;" class="index-thumbnail" data-toggle="modal" data-target="#indexImageModal" data-imagepath="@request.ImagePath" />
+                        }
+                        else
+                        {
+                            <p>No image uploaded</p>
+                        }
+                    </td>
+                    <td>@request.Reason</td>
+                }
                 <td>@request.SupportContent</td>
                 <td>@request.TotalTime</td>
                 @if (ViewBag.UserRole == "Staff")
@@ -207,7 +233,6 @@
     </div>
 </div>
 
-
 <script>
     $(document).ready(function () {
         $("a[data-toggle='modal']").on("click", function (e) {
@@ -215,9 +240,47 @@
             var url = $(this).attr("href");
             var title = $(this).data("title");
             $("#myModalLabel").text(title);
+            // Xóa nội dung cũ trước khi tải nội dung mới
+            $("#myModal .modal-body").empty();
             $("#myModal .modal-body").load(url, function () {
                 $("#myModal").modal("show");
             });
         });
     });
 </script>
+
+
+
+
+
+
+
+<div class="modal fade" id="indexImageModal" tabindex="-1" role="dialog" aria-labelledby="indexImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="indexImageModalLabel">Full-size image</h5>
+            </div>
+            <div class="modal-body">
+                <img id="indexFullSizeImage" src="" alt="Full-size image" style="width: 100%; height: auto;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $(document).on("click", ".index-thumbnail", function () {
+            var imagePath = $(this).data("imagepath");
+            $("#indexFullSizeImage").attr("src", imagePath);
+            $("#indexImageModal").modal("show");
+        });
+
+        $("#indexImageModal").on("hidden.bs.modal", function () {
+            $("#indexFullSizeImage").attr("src", "");
+        });
+    });
+</script>
+
+
