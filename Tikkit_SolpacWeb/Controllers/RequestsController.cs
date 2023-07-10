@@ -39,7 +39,7 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
         (userRole == "Staff" || r.CreatePerson == userName) &&
         (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
         (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
-        (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
+        (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) && 
         (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
         (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
         (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
@@ -362,10 +362,10 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
                     var request = requestsList[i];
                     worksheet.Cells[i + 2, 1].Value = i + 1;
                     worksheet.Cells[i + 2, 2].Value = request.RequestDate.ToString("dd-MM");
-                    worksheet.Cells[i + 2, 3].Value = request.ExpectedDate;
-                    worksheet.Cells[i + 2, 4].Value = request.StartDate.Value.ToString("HH:mm");
-                    worksheet.Cells[i + 2, 5].Value = request.EndDate.Value.ToString("HH:mm");
-                    worksheet.Cells[i + 2, 6].Value = request.EndDate.Value.ToString("dd-MM");
+                    worksheet.Cells[i + 2, 3].Value = request.ExpectedDate.HasValue ? request.ExpectedDate.Value.ToString("dd-MM") : "";
+                    worksheet.Cells[i + 2, 4].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("hh-mm") : "";
+                    worksheet.Cells[i + 2, 4].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("hh-mm") : "";
+                    worksheet.Cells[i + 2, 4].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("dd-MM") : "";
                     worksheet.Cells[i + 2, 7].Value = request.Priority;
                     worksheet.Cells[i + 2, 8].Value = request.Status;
                     worksheet.Cells[i + 2, 9].Value = request.RequestPerson;
