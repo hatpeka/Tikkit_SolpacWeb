@@ -12,6 +12,8 @@ using Tikkit_SolpacWeb.Models;
 using Tikkit_SolpacWeb.Services.Email;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
+using Microsoft.Extensions.Hosting.Internal;
+using System.Diagnostics;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -83,32 +85,26 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
             return View();
         }
 
-        // POST: Requests/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            // POST: Requests/Create
+            // To protect from overposting attacks, enable the specific properties you want to bind to.
+            // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile ImagePath)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile? Image)
         {
-            string userRole = HttpContext.Session.GetString("Role");
-            if (userRole == "Staff")
+            if (Image != null && Image.Length > 0)
             {
-                return Forbid(); // Deny access to staff users
+                string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(Image.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Image.CopyToAsync(fileStream);
+                }
+                requests.ImagePath = "/uploads/" + uniqueFileName;
             }
-
             if (ModelState.IsValid)
             {
-                if (ImagePath != null && ImagePath.Length > 0)
-                {
-                    string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ImagePath.FileName);
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await ImagePath.CopyToAsync(fileStream);
-                    }
-                    requests.ImagePath = "/uploads/" + uniqueFileName;
-                }
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
                 requests.Partner = HttpContext.Session.GetString("Partner");
                 _context.Add(requests);

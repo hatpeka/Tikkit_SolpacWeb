@@ -8,21 +8,28 @@
             @if (Model.Status == "Pending")
             {
                 <div class="form-group">
-                    <label asp-for="ExpectedDate" class="control-label"></label>
+                    <label asp-for="ExpectedDate" class="control-label">Ngày dự kiến</label>
                     <input asp-for="ExpectedDate" class="form-control" />
                     <span asp-validation-for="ExpectedDate" class="text-danger"></span>
                 </div>
+                <div class="form-group">
+                    <label asp-for="Reason" class="control-label">Nguyên nhân</label>
+                    <input asp-for="Reason" class="form-control" />
+                    <span asp-validation-for="Reason" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SupportContent" class="control-label">Nội dung hỗ trợ</label>
+                    <textarea asp-for="SupportContent" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="SupportContent" class="text-danger"></span>
+                </div>
             }
             <div class="form-group">
-                <label asp-for="Reason" class="control-label"></label>
-                <input asp-for="Reason" class="form-control" />
-                <span asp-validation-for="Reason" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SupportContent" class="control-label"></label>
+                <label asp-for="SupportContent" class="control-label">Nội dung hỗ trợ</label>
                 <textarea asp-for="SupportContent" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="SupportContent" class="text-danger"></span>
             </div>
+
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

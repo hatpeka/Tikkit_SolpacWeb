@@ -58,47 +58,48 @@
     <thead>
         <tr>
             <th></th>
-            <th></th>
-            <th>Request Date</th>
+            <th>Stt</th>
+            <th>Ngày yêu cầu</th>
             @if (ViewBag.UserRole == "Client" || ViewBag.UserRole == "Admin")
             {
-                <th>Request Person</th>
+                <th>Người yêu cầu</th>
             }
-            <th>Start Date</th>
+            <th>Ngày bắt đầu</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>Start Time</th>
+                <th>Thời gian bắt đầu</th>
             }
-            <th>Expected Date</th>@if (ViewBag.UserRole == "Staff")
+            <th>Ngày dự kiến</th>
+            @if (ViewBag.UserRole == "Staff")
             {
                 <th>End Time</th>
             }
             <th>End Date</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>Partner</th>
-                <th>Project</th>
-                <th>Request Person</th>
-                <th>Create Person</th>
+                <th>Công ty</th>
+                <th>Dự án</th>
+                <th>Người yêu cầu</th>
+                <th>Người tạo yêu cầu</th>
             }
-            <th>Priority</th>
-            <th>Subject of Request</th>
-            <th>Contents of Request</th>
+            <th>Mức ưu tiên</th>
+            <th>Tiêu đề</th>
+            <th>Nội dung yêu cầu</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>Image</th>
-                <th>Reason</th>
+                <th>Hình ảnh</th>
+                <th>Nguyên nhân</th>
             }
-            <th>Support Content</th>
-            <th>Total Time</th>
+            <th>Nội dung hỗ trợ</th>
+            <th>Thời gian đã hỗ trợ</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>Supporter</th>
+                <th>Người hỗ trợ</th>
             }
-            <th>Status</th>
+            <th>Trạng thái</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>Contact</th>
+                <th>Liên hệ</th>
             }
         </tr>
     </thead>

@@ -239,5 +239,81 @@ namespace Tikkit_SolpacWeb.Controllers
         {
           return (_context.Users?.Any(e => e.ID == id)).GetValueOrDefault();
         }
+
+
+        public async Task<IActionResult> ChangePassword(int? id)
+        {
+            var currentUser = GetCurrentUser();
+            if (id == null || _context.Users == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CurrentUser"] = currentUser;
+
+            var users = await _context.Users.FindAsync(id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return View(users);
+        }
+
+        // POST: Users/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(int id, [Bind("ID,Password,RePassword")] Users users)
+        {
+            if (id != users.ID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    users.RePassword = null;
+                    _context.Update(users);
+                    await _context.SaveChangesAsync();
+                    string? userName = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = userName;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UsersExists(users.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                var currentUser = GetCurrentUser();
+                if (currentUser == null)
+                {
+                    return NotFound();
+                }
+
+                // Redirect to the main page of the role after saving changes.
+                if (currentUser.Role == "Admin")
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else if (currentUser.Role == "Staff")
+                {
+                    return RedirectToAction("Staff", "Home");
+                }
+                else if (currentUser.Role == "Client")
+                {
+                    return RedirectToAction("Client", "Home");
+                }
+            }
+            return View(users);
+        }
     }
 }
