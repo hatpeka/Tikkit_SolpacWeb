@@ -77,6 +77,9 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
         public IActionResult Create()
         {
             string userRole = HttpContext.Session.GetString("UserRole");
+            var users = _context.Users.ToList();
+            ViewBag.Users = users;
+
             if (userRole == "Staff")
             {
                 return Forbid(); // Deny access to staff users
@@ -90,7 +93,7 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile? Image)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile? Image)
         {
             if (Image != null && Image.Length > 0)
             {
@@ -105,8 +108,10 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
             }
             if (ModelState.IsValid)
             {
+                var requestUser = _context.Users.SingleOrDefault(u => u.ID == requests.RequestPersonID);
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
-                requests.Partner = HttpContext.Session.GetString("Partner");
+                requests.RequestPerson = requestUser.Name;
+                
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
@@ -254,6 +259,9 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
                 return NotFound();
             }
 
+            var requestPerson = await _context.Users.FirstOrDefaultAsync(u => u.ID == existingRequest.RequestPersonID);
+            string requestPersonEmail = requestPerson?.Email;
+
 
             if (ModelState.IsValid)
             {
@@ -268,6 +276,14 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
 
                     try
                     {
+                        if (!string.IsNullOrEmpty(requestPersonEmail))
+                        {
+                            string subject = "Thông báo về yêu cầu";
+                            string message = $"Yêu cầu của bạn đã được tiếp nhận bởi: {existingRequest.Supporter}.\n " +
+                                $"Ngày dự kiến: {existingRequest.ExpectedDate}";
+                            await _emailSender.SendEmailAsync(requestPersonEmail, subject, message);
+                        }
+
                         _context.Update(existingRequest);
                         await _context.SaveChangesAsync();
                     }
@@ -295,6 +311,17 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
 
                     try
                     {
+                        if (!string.IsNullOrEmpty(requestPersonEmail))
+                        {
+                            string subject = "Thông báo về yêu cầu";
+                            string message = $"Yêu cầu của bạn đã được hoàn thành bởi: {existingRequest.Supporter}. \n" +
+                                $"Thời gian bắt đầu: {existingRequest.StartDate}\n" +
+                                $"Thời gian kết thúc: {existingRequest.EndDate}\n" +
+                                $"Nội dung hỗ trợ: {existingRequest.SupportContent} \n" +
+                                $"Tổng thời gian đã hỗ trợ: {existingRequest.TotalTime} \n";
+                            await _emailSender.SendEmailAsync(requestPersonEmail, subject, message);
+                        }
+
                         _context.Update(existingRequest);
                         await _context.SaveChangesAsync();
                     }

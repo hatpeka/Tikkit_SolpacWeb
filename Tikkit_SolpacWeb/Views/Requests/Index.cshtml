@@ -26,9 +26,9 @@
     <input class="form-control mr-sm-2" type="date" name="toDate" placeholder="To Date" aria-label="To Date" value="@Context.Request.Query["toDate"]">
     <input class="form-control mr-sm-2" type="text" name="partner" placeholder="Partner" aria-label="Partner" value="@Context.Request.Query["partner"]">
     <select class="form-control mr-sm-2" name="priority">
-        <option value="" selected="@(string.IsNullOrEmpty(prioritySelected))">Priority</option>
-        <option value="Normal" selected="@(prioritySelected == "Normal")">Normal</option>
-        <option value="Urgent" selected="@(prioritySelected == "Urgent")">Urgent</option>
+        <option value="" selected="@(string.IsNullOrEmpty(prioritySelected))">Mức ưu tiên</option>
+        <option value="Normal" selected="@(prioritySelected == "Normal")">Thông thường</option>
+        <option value="Urgent" selected="@(prioritySelected == "Urgent")">Khẩn cấp</option>
     </select>
     @if(ViewBag.UserRole == "Staff")
     {
@@ -36,21 +36,20 @@
     }
     <input class="form-control mr-sm-2" type="text" name="project" placeholder="Project" aria-label="Project" value="@Context.Request.Query["project"]">
     <select class="form-control mr-sm-2" name="status">
-        <option value="" selected="@(string.IsNullOrEmpty(statusSelected))">Status</option>
-        <option value="Done" selected="@(statusSelected == "Done")">Done</option>
-        <option value="Processing" selected="@(statusSelected == "Processing")">Processing</option>
-        <option value="Pending" selected="@(statusSelected == "Pending")">Pending</option>
+        <option value="" selected="@(string.IsNullOrEmpty(statusSelected))">Trạng thái</option>
+        <option value="Done" selected="@(statusSelected == "Done")">Đã hoàn thành</option>
+        <option value="Processing" selected="@(statusSelected == "Processing")">Đang xử lý</option>
+        <option value="Pending" selected="@(statusSelected == "Pending")">Chờ xử lý</option>
     </select>
-    <input class="form-control mr-sm-2" type="text" name="supporter" placeholder="Supporter" aria-label="Supporter" value="@Context.Request.Query["supporter"]">
-    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["search"]">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    <input class="form-control mr-sm-2" type="text" name="supporter" placeholder="Người hỗ trợ" aria-label="Supporter" value="@Context.Request.Query["supporter"]">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
 
 </form>
 
 
     
 <br />
-    <a class="btn btn-outline-info" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Export</a>
+    <a class="btn btn-outline-info" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
 <br />
 <br />
 
@@ -72,9 +71,9 @@
             <th>Ngày dự kiến</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>End Time</th>
+                <th>Thời gian kết thúc</th>
             }
-            <th>End Date</th>
+            <th>Ngày kết thúc</th>
             @if (ViewBag.UserRole == "Staff")
             {
                 <th>Công ty</th>
@@ -162,7 +161,7 @@
                         }
                         else
                         {
-                            <p>No image uploaded</p>
+                            <p>Không có hình ảnh</p>
                         }
                     </td>
                     <td>@request.Reason</td>
@@ -228,7 +227,7 @@
             <div class="modal-body">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
@@ -260,7 +259,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="indexImageModalLabel">Full-size image</h5>
+                <h5 class="modal-title" id="indexImageModalLabel">Hình ảnh</h5>
             </div>
             <div class="modal-body">
                 <img id="indexFullSizeImage" src="" alt="Full-size image" style="width: 100%; height: auto;" />

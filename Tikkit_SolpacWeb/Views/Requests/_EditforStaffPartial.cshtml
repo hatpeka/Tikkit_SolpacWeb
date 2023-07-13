@@ -6,45 +6,45 @@
             <input type="hidden" asp-for="RequestNo" />
 
             <div class="form-group">
-                <label asp-for="RequestDate" class="control-label"></label>
+                <label asp-for="RequestDate" class="control-label">Ngày yêu cầu</label>
                 <input asp-for="RequestDate" class="form-control" />
                 <span asp-validation-for="RequestDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="RequestPerson" class="control-label"></label>
+                <label asp-for="RequestPerson" class="control-label">Người yêu cầu</label>
                 <input asp-for="RequestPerson" class="form-control" />
                 <span asp-validation-for="RequestPerson" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Partner" class="control-label"></label>
+                <label asp-for="Partner" class="control-label">Công ty</label>
                 <input asp-for="Partner" class="form-control" />
                 <span asp-validation-for="Partner" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Project" class="control-label"></label>
+                <label asp-for="Project" class="control-label">Dự án</label>
                 <input asp-for="Project" class="form-control" />
                 <span asp-validation-for="Project" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SubjectOfRequest" class="control-label"></label>
+                <label asp-for="SubjectOfRequest" class="control-label">Tiêu đề</label>
                 <input asp-for="SubjectOfRequest" class="form-control" />
                 <span asp-validation-for="SubjectOfRequest" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ContentsOfRequest" class="control-label"></label>
+                <label asp-for="ContentsOfRequest" class="control-label">Nội dung yêu cầu</label>
                 <textarea asp-for="ContentsOfRequest" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="ContentsOfRequest" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Priority" class="control-label"></label>
+                <label asp-for="Priority" class="control-label">Mức ưu tiên</label>
                 <select asp-for="Priority" class="form-control">
-                    <option value="Normal">Normal</option>
-                    <option value="Urgent">Urgent</option>
+                    <option value="Normal">Thông thường</option>
+                    <option value="Urgent">Khẩn cấp</option>
                 </select>
                 <span asp-validation-for="Priority" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Contact" class="control-label"></label>
+                <label asp-for="Contact" class="control-label">Số điện thoại</label>
                 <input asp-for="Contact" class="form-control" />
                 <span asp-validation-for="Contact" class="text-danger"></span>
             </div>

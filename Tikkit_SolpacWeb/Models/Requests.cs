@@ -40,6 +40,7 @@ namespace Tikkit_SolpacWeb.Models
         public string? Priority { get; set; }
 
         public string? RequestPerson { get; set; }
+        public int? RequestPersonID { get; set; }
         public string? CreatePerson { get; set; }
         public string? Supporter { get; set; }
 

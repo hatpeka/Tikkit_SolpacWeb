@@ -18,9 +18,15 @@
                 <span asp-validation-for="RequestDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="RequestPerson" class="control-label">Người yêu cầu</label>
-                <input asp-for="RequestPerson" class="form-control" />
-                <span asp-validation-for="RequestPerson" class="text-danger"></span>
+                <label asp-for="RequestPersonID" class="control-label">Người yêu cầu</label>
+                <select asp-for="RequestPersonID" class="form-control">
+                    <option value="">Chọn người dùng</option>
+                    @foreach (var user in ViewBag.Users)
+                    {
+                        <option value="@user.ID">@user.Name (@user.Partner)</option>
+                    }
+                </select>
+                <span asp-validation-for="RequestPersonID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Project" class="control-label">Dự án</label>
@@ -67,3 +73,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

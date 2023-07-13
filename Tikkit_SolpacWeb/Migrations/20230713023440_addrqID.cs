@@ -4,12 +4,12 @@
 
 namespace Tikkit_SolpacWeb.Migrations
 {
-    public partial class Image : Migration
+    public partial class addrqID : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "ImagePath",
+                name: "RequestPersonID",
                 table: "Requests",
                 type: "nvarchar(max)",
                 nullable: true);
@@ -18,7 +18,7 @@ namespace Tikkit_SolpacWeb.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ImagePath",
+                name: "RequestPersonID",
                 table: "Requests");
         }
     }

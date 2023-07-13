@@ -12,8 +12,8 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    [Migration("20230710043448_Image")]
-    partial class Image
+    [Migration("20230713023159_rechange")]
+    partial class rechange
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
