@@ -14,7 +14,7 @@ namespace Tikkit_SolpacWeb.Models
         {
             get
             {
-                if (Priority?.ToLower() == "urgent")
+                if (Priority == "Khẩn cấp")
                 {
                     return RequestDate;
                 }
@@ -53,6 +53,6 @@ namespace Tikkit_SolpacWeb.Models
         public string? Reason { get; set; }
         public string? SupportContent { get; set; }
         public string? Contact { get; set; }
-        public string? Status { get; set; } = "Pending";
+        public string? Status { get; set; } = "Đang chờ";
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -240,79 +241,63 @@ namespace Tikkit_SolpacWeb.Controllers
           return (_context.Users?.Any(e => e.ID == id)).GetValueOrDefault();
         }
 
-
-        public async Task<IActionResult> ChangePassword(int? id)
+        // GET: Users/ChangePassword
+        public IActionResult ChangePassword()
         {
             var currentUser = GetCurrentUser();
-            if (id == null || _context.Users == null)
+            if (currentUser == null)
             {
-                return NotFound();
+                return RedirectToAction("Login");
             }
 
-            ViewData["CurrentUser"] = currentUser;
-
-            var users = await _context.Users.FindAsync(id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-            return View(users);
+            return View(currentUser);
         }
 
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Users/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(int id, [Bind("ID,Password,RePassword")] Users users)
+        public async Task<IActionResult> ChangePassword(int id, [Bind("ID,CurrentPassword,NewPassword,ConfirmPassword")] Users users)
         {
             if (id != users.ID)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var currentUser = GetCurrentUser();
+            if (currentUser == null)
             {
-                try
-                {
-                    users.RePassword = null;
-                    _context.Update(users);
-                    await _context.SaveChangesAsync();
-                    string? userName = HttpContext.Session.GetString("UserName");
-                    ViewBag.UserName = userName;
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsersExists(users.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                var currentUser = GetCurrentUser();
-                if (currentUser == null)
-                {
-                    return NotFound();
-                }
-
-                // Redirect to the main page of the role after saving changes.
-                if (currentUser.Role == "Admin")
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else if (currentUser.Role == "Staff")
-                {
-                    return RedirectToAction("Staff", "Home");
-                }
-                else if (currentUser.Role == "Client")
-                {
-                    return RedirectToAction("Client", "Home");
-                }
+                return NotFound();
             }
+
+            // Verify the current password
+            if (users.CurrentPassword != currentUser.Password)
+            {
+                ModelState.AddModelError("CurrentPassword", "The current password is incorrect.");
+                return View(users);
+            }
+            if (users.NewPassword != users.ConfirmPassword)
+            {
+                return View(users);
+            }
+            // Save the new password as plain text
+            currentUser.Password = users.NewPassword;
+            _context.Update(currentUser);
+            await _context.SaveChangesAsync();
+
+            // Redirect to the main page of the role after saving changes.
+            if (currentUser.Role == "Admin")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else if (currentUser.Role == "Staff")
+            {
+                return RedirectToAction("Staff", "Home");
+            }
+            else if (currentUser.Role == "Client")
+            {
+                return RedirectToAction("Client", "Home");
+            }
+
             return View(users);
         }
     }

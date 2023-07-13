@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tikkit_SolpacWeb.Models
 {
@@ -17,5 +18,18 @@ namespace Tikkit_SolpacWeb.Models
         public string? RePassword { get; set; }
         public string Role { get; set; }
         public string Status { get; set; } = "Working";
+
+        [NotMapped]
+        [Display(Name = "Current Password")]
+        public string? CurrentPassword { get; set; }
+
+        [NotMapped]
+        [Display(Name = "New Password")]
+        public string? NewPassword { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Confirm Password")]
+        [Compare("NewPassword", ErrorMessage = "New password and confirmation password do not match.")]
+        public string? ConfirmPassword { get; set; }
     }
 }

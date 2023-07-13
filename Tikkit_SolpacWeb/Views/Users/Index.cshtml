@@ -13,19 +13,22 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Tên
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Password)
+                Công ty
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Role)
+                Mật khẩu
+            </th>
+            <th>
+                Nhóm người dùng
             </th> 
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                Trạng thái
             </th>
         </tr>
     </thead>
@@ -37,6 +40,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Partner)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Password)

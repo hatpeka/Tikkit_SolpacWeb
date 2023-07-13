@@ -31,28 +31,29 @@ namespace Tikkit_SolpacWeb.Controllers
 
         // GET: Requests
         [RequireLogin]
-public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
-{
-    string userRole = HttpContext.Session.GetString("UserRole");
-    string userName = HttpContext.Session.GetString("UserName");
-    var requests = _context.Requests.AsQueryable();
-    ViewBag.UserRole = userRole;
+        public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
+        {
+            string userRole = HttpContext.Session.GetString("UserRole");
+            string userName = HttpContext.Session.GetString("UserName");
+            var requests = _context.Requests.AsQueryable();
+            ViewBag.UserRole = userRole;
 
-    requests = requests.Where(r =>
-        (userRole == "Staff" || r.CreatePerson == userName) &&
-        (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
-        (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
-        (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) && 
-        (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
-        (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
-        (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
-        (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
-        (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
-        (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
-    );
+            requests = requests.Where(r =>
+                (userRole != "Staff" || (r.Status == "Pending" || r.Supporter == userName)) &&
+                (userRole == "Staff" || r.CreatePerson == userName) &&
+                (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
+                (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
+                (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
+                (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
+                (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
+                (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
+                (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
+                (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
+            );
 
-    return View(await requests.ToListAsync());
-}
+            return View(await requests.ToListAsync());
+        }
 
 
         // GET: Requests/Details/5
@@ -265,9 +266,9 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
 
             if (ModelState.IsValid)
             {
-                if (existingRequest.Status == "Pending")
+                if (existingRequest.Status == "Đang chờ")
                 {
-                    existingRequest.Status = "Processing";
+                    existingRequest.Status = "Đang xử lý";
                     existingRequest.Supporter = HttpContext.Session.GetString("UserName");
                     existingRequest.StartDate = DateTime.Now;
                     existingRequest.ExpectedDate = request.ExpectedDate;
@@ -301,9 +302,9 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
 
                     return RedirectToAction(nameof(Index));
                 }
-                else if(existingRequest.Status == "Processing")
+                else if(existingRequest.Status == "Đang xử lý")
                 {
-                    existingRequest.Status = "Done";
+                    existingRequest.Status = "Đã hoàn thành";
                     existingRequest.EndDate = DateTime.Now; 
                     existingRequest.Reason = request.Reason;
                     existingRequest.SupportContent = request.SupportContent;
@@ -427,7 +428,6 @@ public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTi
                 return File(stream, contentType, fileName);
             }
         }
-
         private bool RequestsExists(int id)
         {
           return (_context.Requests?.Any(e => e.RequestNo == id)).GetValueOrDefault();

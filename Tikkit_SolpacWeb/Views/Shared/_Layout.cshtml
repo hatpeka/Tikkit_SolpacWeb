@@ -29,7 +29,7 @@
                         @userName
                     </button>
                     <div class="dropdown-menu text-black" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" asp-controller="Users" asp-action="Edit" asp-route-id="@Context.Session.GetInt32("UserId")">Change password</a>
+                        <a class="dropdown-item" asp-controller="Users" asp-action="ChangePassword" asp-route-id="@Context.Session.GetInt32("UserId")">Đổi mật khẩu</a>
                         <a class="dropdown-item" asp-controller="Users" asp-action="Logout">Đăng xuất</a>
                     </div>
                 </div>

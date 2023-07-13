@@ -50,6 +50,7 @@
     
 <br />
     <a class="btn btn-outline-info" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
+<a class="btn btn-outline-primary ml-2" asp-action="ImportFromFile" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Nhập file</a>
 <br />
 <br />
 
