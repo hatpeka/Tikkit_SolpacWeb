@@ -154,6 +154,8 @@ namespace Tikkit_SolpacWeb.Controllers
                 return NotFound();
             }
 
+            ModelState.Remove("Password");
+            ModelState.Remove("RePassword");
             if (ModelState.IsValid)
             {
                 try
