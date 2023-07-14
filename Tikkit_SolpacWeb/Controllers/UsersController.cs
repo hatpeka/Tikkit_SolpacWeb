@@ -140,9 +140,16 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Partner,Address,Sex,Phone,Email,Password,RePassword,Role,Status")] Users users)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Partner,Address,Sex,Phone,Email,Role,Status")] Users users)
         {
             if (id != users.ID)
+            {
+                return NotFound();
+            }
+
+            var existingUser = await _context.Users.FindAsync(id);
+
+            if (existingUser == null)
             {
                 return NotFound();
             }
@@ -151,8 +158,17 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 try
                 {
-                    users.RePassword = null;
-                    _context.Update(users);
+                    existingUser.Name = users.Name;
+                    existingUser.Partner = users.Partner;
+                    existingUser.Address = users.Address;
+                    existingUser.Sex = users.Sex;
+                    existingUser.Phone = users.Phone;
+                    existingUser.Email = users.Email;
+                    existingUser.Role = users.Role;
+                    existingUser.Status = users.Status;
+
+                    // Password and RePassword are not updated
+
                     await _context.SaveChangesAsync();
                     string? userName = HttpContext.Session.GetString("UserName");
                     ViewBag.UserName = userName;
@@ -176,7 +192,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 }
 
                 // Redirect to the main page of the role after saving changes.
-                if (currentUser.Role == "Admin")    
+                if (currentUser.Role == "Admin")
                 {
                     return RedirectToAction(nameof(Index));
                 }

@@ -13,7 +13,7 @@ namespace Tikkit_SolpacWeb.Models
         public string Sex { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Password { get; set; } 
         [Compare("Password", ErrorMessage = "Password and confirmation password do not match.")]
         public string? RePassword { get; set; }
         public string Role { get; set; }

@@ -5,7 +5,7 @@
         <form asp-action="StaffResponse">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="RequestNo" />
-            @if (Model.Status == "Pending")
+            @if (Model.Status == "Đang chờ")
             {
                 <div class="form-group">
                     <label asp-for="ExpectedDate" class="control-label">Ngày dự kiến</label>
@@ -23,7 +23,7 @@
                     <span asp-validation-for="SupportContent" class="text-danger"></span>
                 </div>
             }
-            @if (Model.Status == "Processing")
+            @if (Model.Status == "Đang xử lý")
             {
                 <div class="form-group">
                     <label asp-for="SupportContent" class="control-label">Nội dung hỗ trợ</label>

@@ -11,30 +11,30 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Tên</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Partner" class="control-label"></label>
+                <label asp-for="Partner" class="control-label">Công ty</label>
                 <input asp-for="Partner" class="form-control" />
                 <span asp-validation-for="Partner" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
+                <label asp-for="Address" class="control-label">Địa chỉ</label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Sex" class="control-label"></label>
+                <label asp-for="Sex" class="control-label">Giới tính</label>
                 <select asp-for="Sex" class="form-control">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
                 </select>
                 <span asp-validation-for="Sex" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
+                <label asp-for="Phone" class="control-label">Số điện thoại</label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
@@ -44,17 +44,7 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RePassword" class="control-label"></label>
-                <input asp-for="RePassword" class="form-control" />
-                <span asp-validation-for="RePassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
+                <label asp-for="Role" class="control-label">Nhóm người dùng</label>
                 <select asp-for="Role" class="form-control">
                     <option value="Admin">Admin</option>
                     <option value="Staff">Staff</option>
@@ -63,7 +53,7 @@
                 <span asp-validation-for="Role" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
+                <label asp-for="Status" class="control-label">Trạng thái</label>
                 <select asp-for="Status" class="form-control">
                     <option value="Working">Working</option>
                     <option value="Stopped">Stopped</option>

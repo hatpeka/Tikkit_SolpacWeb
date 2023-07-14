@@ -112,13 +112,13 @@
             string backgroundColor = "";
             switch (request.Status)
             {
-                case "Pending":
+                case "Đang chờ":
                     backgroundColor = "#FCD5B4";
                     break;
-                case "Processing":
+                case "Đang xử lý":
                     backgroundColor = "#F2CF59";
                     break;
-                case "Done":
+                case "Đã hoàn thành":
                     backgroundColor = "#B5DDD1";
                     break;
             }
@@ -174,7 +174,7 @@
                     <td>@request.Supporter</td>
                 }
                 <td>
-                    @if (@request.Status != "Done")
+                    @if (@request.Status != "Đã hoàn thành")
                     {
                         @if (ViewBag.UserRole == "Staff")
                         {

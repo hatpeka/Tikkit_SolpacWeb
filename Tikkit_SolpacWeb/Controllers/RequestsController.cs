@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
 using Microsoft.Extensions.Hosting.Internal;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -39,7 +40,7 @@ namespace Tikkit_SolpacWeb.Controllers
             ViewBag.UserRole = userRole;
 
             requests = requests.Where(r =>
-                (userRole != "Staff" || (r.Status == "Pending" || r.Supporter == userName)) &&
+                (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
                 (userRole == "Staff" || r.CreatePerson == userName) &&
                 (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
                 (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
@@ -112,7 +113,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 var requestUser = _context.Users.SingleOrDefault(u => u.ID == requests.RequestPersonID);
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
                 requests.RequestPerson = requestUser.Name;
-                
+                requests.Partner = requestUser.Partner;
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
@@ -140,6 +141,8 @@ namespace Tikkit_SolpacWeb.Controllers
                 return NotFound();
             }
 
+            var users = _context.Users.ToList();
+            ViewBag.Users = users;
             var requests = await _context.Requests.FindAsync(id);
             if (requests == null)
             {
@@ -353,6 +356,7 @@ namespace Tikkit_SolpacWeb.Controllers
             var requests = _context.Requests.AsQueryable();
 
             requests = requests.Where(r =>
+                (userRole != "Staff" || (r.Status == "Pending" || r.Supporter == userName)) &&
                 (userRole == "Staff" || r.CreatePerson == userName) &&
                 (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
                 (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
@@ -428,6 +432,56 @@ namespace Tikkit_SolpacWeb.Controllers
                 return File(stream, contentType, fileName);
             }
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> ImportFromExcel(IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        ModelState.AddModelError("File", "Please upload a file.");
+        //        return View(); // Replace with the view you want to return
+        //    }
+
+        //    if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        ModelState.AddModelError("File", "Invalid file format. Please upload an Excel file (.xlsx).");
+        //        return View(); // Replace with the view you want to return
+        //    }
+
+        //    try
+        //    {
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(stream);
+        //            using (var package = new ExcelPackage(stream))
+        //            {
+        //                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+        //                int rowCount = worksheet.Dimension.Rows;
+
+        //                for (int row = 2; row <= rowCount; row++)
+        //                {
+        //                    var request = new Requests
+        //                    {
+        //                        RequestDate = DateTime.ParseExact(worksheet.Cells[row, 2].Value.ToString(), "dd-MM", CultureInfo.InvariantCulture),
+        //                        ExpectedDate = DateTime.TryParseExact(worksheet.Cells[row, 3].Value.ToString(), "dd-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime expectedDate) ? expectedDate : (DateTime?)null,
+        //                        StartDate = DateTime.TryParseExact(worksheet.Cells[row, 4].Value.ToString()
+        //                    };
+
+        //                    _context.Requests.Add(request);
+        //                }
+
+        //                await _context.SaveChangesAsync();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError("File", "An error occurred while processing the file. Please make sure the file format is correct.");
+        //        return View(); // Replace with the view you want to return
+        //    }
+
+        //    return RedirectToAction("Index"); // Replace with the action you want to redirect to after successful import
+        //}
         private bool RequestsExists(int id)
         {
           return (_context.Requests?.Any(e => e.RequestNo == id)).GetValueOrDefault();
