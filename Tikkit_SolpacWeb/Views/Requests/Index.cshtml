@@ -128,7 +128,7 @@
             }
             <tr style="background-color: @backgroundColor">
                 <td>
-                    <a asp-action="Details" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Details">Details</a>
+                    <a asp-action="Details" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Details"><i class="bi bi-info-lg"></i></a>
                 </td>
                 <td>@order</td>
                 <td>@request.RequestDate.ToString("dd-MM")</td>
@@ -203,7 +203,7 @@
                     }
                     @if (!string.IsNullOrEmpty(phoneNumber))
                     {
-                        <a href="@zaloLink" target="_blank">Zalo</a>
+                            <a href="@zaloLink" target="_blank"><i class="bi bi-telephone-fill"></i></a>
                     }
                     else
                     {
@@ -212,7 +212,7 @@
                 </td>
                 }
                 <td>
-                    <a asp-action="EditforStaff" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Edit">Edit</a>
+                    <a asp-action="EditforStaff" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Edit"><i class="bi bi-pencil-square"></i></a>
                 </td>
             </tr>
             order++;
