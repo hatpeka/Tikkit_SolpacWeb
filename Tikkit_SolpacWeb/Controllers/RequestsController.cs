@@ -68,7 +68,6 @@ namespace Tikkit_SolpacWeb.Controllers
                 .Where(n => n.Target == userId) // Filter notifications based on the current userId
                 .ToList();
             ViewBag.Notifications = notifications;
-
             return View(await requests.ToListAsync());
         }
 

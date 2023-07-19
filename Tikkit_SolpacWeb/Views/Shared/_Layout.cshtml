@@ -74,16 +74,16 @@
             {
                 <a class="text-black" asp-area="" asp-controller="Users" asp-action="Index"><i class="bi bi-person-lines-fill"></i></a>
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create"><i class="bi bi-plus-square-fill"></i></a>
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-envelope-fill"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-table"></i></a>
             }
             else if (userRole == "Staff")
             {
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-envelope-fill"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-table"></i></a>
             }
             else if (userRole == "Client")
             {
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create"><i class="bi bi-plus-square"></i></a>
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-envelope-fill"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-table"></i></a>
             }
         }
     </div>

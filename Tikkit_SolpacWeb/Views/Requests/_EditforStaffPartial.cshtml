@@ -1,61 +1,99 @@
 ﻿@model Tikkit_SolpacWeb.Models.Requests
 
 <div>
-        <form asp-action="EditforStaff">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="RequestNo" />
+    <form asp-action="EditforStaff" class="form-horizontal">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="RequestNo" />
 
-            <div class="form-group">
-                <label asp-for="RequestDate" class="control-label">Ngày yêu cầu</label>
-                <input asp-for="RequestDate" class="form-control" />
-                <span asp-validation-for="RequestDate" class="text-danger"></span>
+        <div class="form-row">
+            <!-- Column 1 -->
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="RequestDate" class="control-label">Ngày yêu cầu</label>
+                    <input asp-for="RequestDate" class="form-control" />
+                    <span asp-validation-for="RequestDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StartDate" class="control-label">Ngày bắt đầu</label>
+                    <input asp-for="StartDate" class="form-control" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndDate" class="control-label">Ngày kết thúc</label>
+                    <input asp-for="EndDate" class="form-control" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Priority" class="control-label">Mức ưu tiên</label>
+                    <select asp-for="Priority" class="form-control">
+                        <option value="Normal">Thông thường</option>
+                        <option value="Urgent">Khẩn cấp</option>
+                    </select>
+                    <span asp-validation-for="Priority" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RequestPerson" class="control-label">Người yêu cầu</label>
+                    <input asp-for="RequestPerson" class="form-control" readonly />
+                    <span asp-validation-for="RequestPerson" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CreatePerson" class="control-label">Người tạo</label>
+                    <input asp-for="CreatePerson" class="form-control" readonly/>
+                    <span asp-validation-for="CreatePerson" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Supporter" class="control-label">Người hỗ trợ</label>
+                    <input asp-for="Supporter" class="form-control"/>
+                    <span asp-validation-for="Supporter" class="text-danger"></span>
+                </div>
+                
+
+                <!-- Other fields... -->
             </div>
-            <div class="form-group">
-                <label asp-for="RequestPersonID" class="control-label">Người yêu cầu</label>
-                <select asp-for="RequestPersonID" class="form-control">
-                    <option value="">Người yêu cầu</option>
-                    @foreach (var user in ViewBag.Users)
-                    {
-                        <option value="@user.ID">@user.Name (@user.Partner)</option>
-                    }
-                </select>
-                <span asp-validation-for="RequestPersonID" class="text-danger"></span>
+
+            <!-- Column 2 -->
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Partner" class="control-label">Công ty</label>
+                    <input asp-for="Partner" class="form-control" readonly />
+                    <span asp-validation-for="Partner" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Project" class="control-label">Dự án</label>
+                    <input asp-for="Project" class="form-control" readonly />
+                    <span asp-validation-for="Project" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SubjectOfRequest" class="control-label">Tiêu đề</label>
+                    <input asp-for="SubjectOfRequest" class="form-control" />
+                    <span asp-validation-for="SubjectOfRequest" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ContentsOfRequest" class="control-label">Nội dung yêu cầu</label>
+                    <textarea asp-for="ContentsOfRequest" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="ContentsOfRequest" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Reason" class="control-label">Nguyên nhân</label>
+                    <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Reason" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SupportContent" class="control-label">Nội dung hỗ trợ</label>
+                    <textarea asp-for="SupportContent" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="SupportContent" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Project" class="control-label">Dự án</label>
-                <input asp-for="Project" class="form-control" />
-                <span asp-validation-for="Project" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SubjectOfRequest" class="control-label">Tiêu đề</label>
-                <input asp-for="SubjectOfRequest" class="form-control" />
-                <span asp-validation-for="SubjectOfRequest" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContentsOfRequest" class="control-label">Nội dung yêu cầu</label>
-                <textarea asp-for="ContentsOfRequest" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="ContentsOfRequest" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Priority" class="control-label">Mức ưu tiên</label>
-                <select asp-for="Priority" class="form-control">
-                    <option value="Normal">Thông thường</option>
-                    <option value="Urgent">Khẩn cấp</option>
-                </select>
-                <span asp-validation-for="Priority" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Contact" class="control-label">Số điện thoại</label>
-                <input asp-for="Contact" class="form-control" />
-                <span asp-validation-for="Contact" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
 </div>
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
