@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using Tikkit_SolpacWeb.Data;
 using Tikkit_SolpacWeb.Models;
 
@@ -310,5 +311,94 @@ namespace Tikkit_SolpacWeb.Controllers
 
             return View(users);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportUsersToExcel()
+        {
+            var users = _context.Users.AsQueryable();
+
+            var usersList = await users.ToListAsync();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Users");
+
+                // Tạo tiêu đề cho các cột
+                worksheet.Cells[1, 1].Value = "STT";
+                worksheet.Cells[1, 2].Value = "Tên";
+                worksheet.Cells[1, 3].Value = "Đối tác";
+                worksheet.Cells[1, 4].Value = "Địa chỉ";
+                worksheet.Cells[1, 5].Value = "Giới tính";
+                worksheet.Cells[1, 6].Value = "Điện thoại";
+                worksheet.Cells[1, 7].Value = "Email";
+                worksheet.Cells[1, 8].Value = "Nhóm người dùng";
+
+                // Đổ dữ liệu vào bảng
+                for (int i = 0; i < usersList.Count; i++)
+                {
+                    var user = usersList[i];
+                    worksheet.Cells[i + 2, 1].Value = i + 1;
+                    worksheet.Cells[i + 2, 2].Value = user.Name;
+                    worksheet.Cells[i + 2, 3].Value = user.Partner;
+                    worksheet.Cells[i + 2, 4].Value = user.Address;
+                    worksheet.Cells[i + 2, 5].Value = user.Sex;
+                    worksheet.Cells[i + 2, 6].Value = user.Phone;
+                    worksheet.Cells[i + 2, 7].Value = user.Email;
+                    worksheet.Cells[i + 2, 8].Value = user.Role;
+                }
+
+                // Ghi file Excel vào MemoryStream
+                MemoryStream stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                // Trả file Excel về cho người dùng
+                string fileName = "UsersReport.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportUsersFromExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file selected");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                using (var package = new ExcelPackage(stream))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                    int rowCount = worksheet.Dimension.Rows;
+
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        Users user = new Users
+                        {
+                            Name = worksheet.Cells[row, 2].Value.ToString().Trim(),
+                            Partner = worksheet.Cells[row, 3].Value.ToString().Trim(),
+                            Address = worksheet.Cells[row, 4].Value.ToString().Trim(),
+                            Sex = worksheet.Cells[row, 5].Value.ToString().Trim(),
+                            Phone = worksheet.Cells[row, 6].Value.ToString().Trim(),
+                            Email = worksheet.Cells[row, 7].Value.ToString().Trim(),
+                            Password = "1",
+                            RePassword = "1",
+                            Role = worksheet.Cells[row, 8].Value.ToString().Trim()
+                        };
+
+                        _context.Users.Add(user);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

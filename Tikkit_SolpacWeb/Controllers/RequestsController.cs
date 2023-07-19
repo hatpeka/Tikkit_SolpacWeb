@@ -468,8 +468,8 @@ namespace Tikkit_SolpacWeb.Controllers
                     worksheet.Cells[i + 2, 2].Value = request.RequestDate.ToString("dd-MM");
                     worksheet.Cells[i + 2, 3].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("dd-MM") : "";
                     worksheet.Cells[i + 2, 4].Value = request.ExpectedDate.HasValue ? request.ExpectedDate.Value.ToString("dd-MM") : "";
-                    worksheet.Cells[i + 2, 5].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("hh:mm:ss") : "";
-                    worksheet.Cells[i + 2, 6].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("hh:mm:ss") : "";
+                    worksheet.Cells[i + 2, 5].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("HH:mm:ss") : "";
+                    worksheet.Cells[i + 2, 6].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("HH:mm:ss") : "";
                     worksheet.Cells[i + 2, 7].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("dd-MM") : "";
                     worksheet.Cells[i + 2, 8].Value = request.Priority;
                     worksheet.Cells[i + 2, 9].Value = request.Status;
@@ -484,6 +484,7 @@ namespace Tikkit_SolpacWeb.Controllers
                     worksheet.Cells[i + 2, 18].Value = request.Reason;
                     worksheet.Cells[i + 2, 19].Value = request.SupportContent;
                     worksheet.Cells[i + 2, 20].Value = request.TotalTime;
+                    worksheet.Cells[i + 2, 21].Value = request.Contact;
                 }
 
                 // Ghi file Excel vào MemoryStream
@@ -504,13 +505,13 @@ namespace Tikkit_SolpacWeb.Controllers
             if (file == null || file.Length == 0)
             {
                 ModelState.AddModelError("File", "Please upload a file.");
-                return RedirectToAction("Index"); ; // Replace with the view you want to return
+                return RedirectToAction("Index");
             }
 
             if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("File", "Invalid file format. Please upload an Excel file (.xlsx).");
-                return RedirectToAction("Index"); ; // Replace with the view you want to return
+                return RedirectToAction("Index");
             }
 
             try
@@ -525,13 +526,15 @@ namespace Tikkit_SolpacWeb.Controllers
 
                         for (int row = 2; row <= rowCount; row++)
                         {
-                            var startDate = worksheet.Cells[row, 3].Value?.ToString();
-                            var startTime = worksheet.Cells[row, 5].Value?.ToString();
+                            // Parse start date and time
+                            string startDate = worksheet.Cells[row, 3].Value?.ToString();
+                            string startTime = worksheet.Cells[row, 5].Value?.ToString();
                             DateTime? startDateValue = null;
                             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(startTime))
                             {
                                 DateTime parsedDate;
-                                if (DateTime.TryParseExact($"{startDate}{startTime}", "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                                var startDateTimeString = $"{startDate}-2023 {startTime}";
+                                if (DateTime.TryParseExact(startDateTimeString, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                                 {
                                     startDateValue = parsedDate;
                                 }
@@ -541,13 +544,15 @@ namespace Tikkit_SolpacWeb.Controllers
                                 }
                             }
 
+                            // Parse end date and time
                             var endDate = worksheet.Cells[row, 7].Value?.ToString();
                             var endTime = worksheet.Cells[row, 6].Value?.ToString();
                             DateTime? endDateValue = null;
                             if (!string.IsNullOrEmpty(endDate) && !string.IsNullOrEmpty(endTime))
                             {
                                 DateTime parsedDate;
-                                if (DateTime.TryParseExact($"{endDate}{endTime}", "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                                var endDateTimeString = $"{endDate}-2023 {endTime}";
+                                if (DateTime.TryParseExact(endDateTimeString, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                                 {
                                     endDateValue = parsedDate;
                                 }
@@ -557,18 +562,24 @@ namespace Tikkit_SolpacWeb.Controllers
                                 }
                             }
 
+                            // Parse request date
                             DateTime requestDate;
-                            if (!DateTime.TryParseExact(worksheet.Cells[row, 2].Value.ToString(), "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out requestDate))
+                            string requestDateString = worksheet.Cells[row, 2].Value.ToString();
+                            string requestDateStringWithYear = $"{requestDateString}-2023"; // Append the year to the date string
+
+                            if (!DateTime.TryParseExact(requestDateStringWithYear, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out requestDate))
                             {
                                 // Handle the case where the date could not be parsed
                             }
 
+                            // Parse expected date
                             var expectedDateString = (worksheet.Cells[row, 4].Value ?? "").ToString();
                             DateTime? expectedDate = null;
                             if (!string.IsNullOrEmpty(expectedDateString))
                             {
                                 DateTime parsedDate;
-                                if (DateTime.TryParseExact(expectedDateString, "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                                var expectedDateTimeString = $"{expectedDateString}-2023";
+                                if (DateTime.TryParseExact(expectedDateTimeString, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                                 {
                                     expectedDate = parsedDate;
                                 }
@@ -585,6 +596,7 @@ namespace Tikkit_SolpacWeb.Controllers
                                 ExpectedDate = expectedDate,
                                 EndDate = endDateValue,
                                 Priority = worksheet.Cells[row, 8].Value.ToString(),
+                                Status = worksheet.Cells[row, 9].Value.ToString(),
                                 RequestPerson = worksheet.Cells[row, 10].Value.ToString(),
                                 CreatePerson = worksheet.Cells[row, 11].Value.ToString(),
                                 Supporter = worksheet.Cells[row, 12]?.Value?.ToString(),
@@ -595,20 +607,21 @@ namespace Tikkit_SolpacWeb.Controllers
                                 ImagePath = "",
                                 Reason = worksheet.Cells[row, 18]?.Value?.ToString(),
                                 SupportContent = worksheet.Cells[row, 19]?.Value?.ToString(),
+                                Contact = worksheet.Cells[row, 21]?.Value?.ToString(),
                             };
                             _context.Requests.Add(request);
                         };
-                    }
 
-                    await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("File", "An error occurred while processing the file. Please make sure the file format is correct.");
-                return RedirectToAction("Index"); // Replace with the view you want to return
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Staff", "Home"); // Replace with the action you want to redirect to after successful import
+            return RedirectToAction("Staff", "Home");
         }
         private bool RequestsExists(int id)
         {

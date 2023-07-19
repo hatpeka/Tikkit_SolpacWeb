@@ -9,6 +9,14 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<br />
+<a class="btn btn-outline-info" asp-action="ExportUsersToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
+<form id="importForm" asp-action="ImportUsersFromExcel" method="post" enctype="multipart/form-data" style="display: none;">
+    <input type="file" id="file" name="file">
+</form>
+<button id="importButton" class="btn btn-primary">Import</button>
+<br />
+<br />
 <table class="table">
     <thead>
         <tr>
@@ -55,3 +63,15 @@
 }
     </tbody>
 </table>
+
+<script>
+    document.getElementById("importButton").addEventListener("click", function () {
+        document.getElementById("file").click();
+    });
+
+    document.getElementById("file").addEventListener("change", function () {
+        if (this.value) {
+            document.getElementById("importForm").submit();
+        }
+    });
+</script>
