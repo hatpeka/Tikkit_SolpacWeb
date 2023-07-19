@@ -7,14 +7,14 @@
 <h1>Quản lý người dùng</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Tạo người dùng mới</a>
 </p>
 <br />
 <a class="btn btn-outline-info" asp-action="ExportUsersToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
 <form id="importForm" asp-action="ImportUsersFromExcel" method="post" enctype="multipart/form-data" style="display: none;">
     <input type="file" id="file" name="file">
 </form>
-<button id="importButton" class="btn btn-primary">Import</button>
+<button id="importButton" class="btn btn-primary">Nhập file</button>
 <br />
 <br />
 <table class="table">
