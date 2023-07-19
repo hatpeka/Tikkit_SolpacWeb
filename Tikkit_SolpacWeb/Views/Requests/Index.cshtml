@@ -26,6 +26,7 @@
     <input class="form-control mr-sm-2" type="date" name="toDate" placeholder="To Date" aria-label="To Date" value="@Context.Request.Query["toDate"]">
     <input class="form-control mr-sm-2" type="text" name="partner" placeholder="Partner" aria-label="Partner" value="@Context.Request.Query["partner"]">
     <select class="form-control mr-sm-2" name="priority">
+
         <option value="" selected="@(string.IsNullOrEmpty(prioritySelected))">Mức ưu tiên</option>
         <option value="Normal" selected="@(prioritySelected == "Normal")">Thông thường</option>
         <option value="Urgent" selected="@(prioritySelected == "Urgent")">Khẩn cấp</option>
@@ -53,7 +54,6 @@
     <form id="importForm" asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" style="display: none;">
         <input type="file" id="file" name="file">
     </form>
-
     <button id="importButton" class="btn btn-primary">Import</button>
 <br />
 <br />
@@ -290,7 +290,7 @@
 
 
 
-<script>
+@*<script>
     document.getElementById("importButton").addEventListener("click", function () {
         document.getElementById("file").click();
     });
@@ -300,6 +300,6 @@
             document.getElementById("importForm").submit();
         }
     });
-</script>
+</script>*@
 
 

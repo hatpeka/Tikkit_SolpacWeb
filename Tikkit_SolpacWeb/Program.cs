@@ -5,6 +5,7 @@ using Tikkit_SolpacWeb.Data;
 using Microsoft.AspNetCore.Authorization;
 using Tikkit_SolpacWeb.Services.Email;
 using OfficeOpenXml;
+using Tikkit_SolpacWeb.Hubs;
 
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -18,6 +19,8 @@ builder.Services.AddSession(option =>
     option.Cookie.HttpOnly = true;
     option.Cookie.IsEssential = true;
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -45,6 +48,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.MapHub<NotificationHub>("/notificationHub");
+
 
 
 app.UseSession();

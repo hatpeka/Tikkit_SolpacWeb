@@ -15,6 +15,11 @@ using OfficeOpenXml;
 using Microsoft.Extensions.Hosting.Internal;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.AspNetCore.SignalR;
+using Tikkit_SolpacWeb.Hubs;
+using Microsoft.AspNetCore.Identity;
+using System.Collections;
+using System.Security.Claims;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -23,25 +28,31 @@ namespace Tikkit_SolpacWeb.Controllers
         private readonly Tikkit_SolpacWebContext _context;
         private readonly EmailSender _emailSender;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public RequestsController(Tikkit_SolpacWebContext context, EmailSender emailSender, IWebHostEnvironment hostingEnvironment)
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public RequestsController(Tikkit_SolpacWebContext context, EmailSender emailSender, IWebHostEnvironment hostingEnvironment, IHubContext<NotificationHub> hubcontext)
         {
             _context = context;
             _emailSender = emailSender;
             _hostingEnvironment = hostingEnvironment;
+            _hubContext = hubcontext;
         }
 
         // GET: Requests
         [RequireLogin]
-        public async Task<IActionResult> Index(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
+        public async Task<IActionResult> Index(int? id, string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
         {
             string userRole = HttpContext.Session.GetString("UserRole");
             string userName = HttpContext.Session.GetString("UserName");
             var requests = _context.Requests.AsQueryable();
             ViewBag.UserRole = userRole;
 
+            if (id.HasValue)
+            {
+                requests = requests.Where(r => r.RequestNo == id.Value);
+            }
             requests = requests.Where(r =>
                 (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
-                (userRole == "Staff" || r.CreatePerson == userName) &&
+                (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
                 (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
                 (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
@@ -52,6 +63,11 @@ namespace Tikkit_SolpacWeb.Controllers
                 (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
                 (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
             );
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var notifications = _context.Notification
+                .Where(n => n.Target == userId) // Filter notifications based on the current userId
+                .ToList();
+            ViewBag.Notifications = notifications;
 
             return View(await requests.ToListAsync());
         }
@@ -81,6 +97,12 @@ namespace Tikkit_SolpacWeb.Controllers
             string userRole = HttpContext.Session.GetString("UserRole");
             var users = _context.Users.ToList();
             ViewBag.Users = users;
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var notifications = _context.Notification
+                .Where(n => n.Target == userId) // Filter notifications based on the current userId
+                .ToList();
+            ViewBag.Notifications = notifications;
 
             if (userRole == "Staff")
             {
@@ -128,6 +150,27 @@ namespace Tikkit_SolpacWeb.Controllers
                 {
                     await _emailSender.SendEmailAsync(staffEmail, emailSubject, emailMessage);
                 }
+
+                string notificationMessage = $"Client {requests.RequestPerson} has created a new request.";
+
+                var staffUsers = _context.Users
+                    .Where(u => u.Role == "Staff")
+                    .ToList();
+                foreach (var staffUser in staffUsers)
+                {
+                    var notification = new Notification
+                    {
+                        Target = staffUser.ID,
+                        CreateTime = DateTime.Now,
+                        Title = $"Client {requests.RequestPerson} has a new request.",
+                        RequestID = requests.RequestNo
+                    };
+                    _context.Add(notification);
+                    await _context.SaveChangesAsync();
+
+                    await _hubContext.Clients.User(staffUser.ID.ToString()).SendAsync("ReceiveNotification", notification.Title);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(requests);
@@ -288,6 +331,16 @@ namespace Tikkit_SolpacWeb.Controllers
                             await _emailSender.SendEmailAsync(requestPersonEmail, subject, message);
                         }
 
+                        var notification = new Notification
+                        {
+                            Target = existingRequest.RequestPersonID, // this should be the client's user ID
+                            CreateTime = DateTime.Now,
+                            Title = $"Your request has been received by staff {existingRequest.Supporter}.",
+                            RequestID = existingRequest.RequestNo,
+                        };
+                        _context.Add(notification);
+                        await _context.SaveChangesAsync();
+
                         _context.Update(existingRequest);
                         await _context.SaveChangesAsync();
                     }
@@ -325,6 +378,16 @@ namespace Tikkit_SolpacWeb.Controllers
                                 $"Tổng thời gian đã hỗ trợ: {existingRequest.TotalTime} \n";
                             await _emailSender.SendEmailAsync(requestPersonEmail, subject, message);
                         }
+
+                        var notification = new Notification
+                        {
+                            Target = existingRequest.RequestPersonID,
+                            CreateTime = DateTime.Now,
+                            Title = $"Your request has been done by staff {existingRequest.Supporter}.",
+                            RequestID = existingRequest.RequestNo,
+                        };
+                        _context.Add(notification);
+                        await _context.SaveChangesAsync();
 
                         _context.Update(existingRequest);
                         await _context.SaveChangesAsync();

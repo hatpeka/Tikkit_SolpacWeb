@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http;
+@using System.Linq
 
 
 <!DOCTYPE html>
@@ -17,10 +18,33 @@
 </head>
 <body>
     <div class="header">
-        <img class="logo" src="~/images/Logo Solpac Vn 2022 .png" alt="Your Logo" width="450" height="50" />
+        <img class="logo" src="~/images/Logo Solpac Vn 2022 .png" alt="Your Logo" width="380" height="50" />
         <div class="header-right">
             @if (Context.Session.GetString("UserEmail") != null)
             {
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle text-black" type="button" id="notificationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Thông báo
+                    </button>
+                    <div class="dropdown-menu text-black" aria-labelledby="notificationDropdown">
+                        @if (ViewBag.Notifications != null && ((List<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications).Any())
+                        {
+                            foreach (var notification in (IEnumerable<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications)
+                            {
+                                <a class="dropdown-item" href="@Url.Action("Index", "Requests", new { id = notification.RequestID })">
+                                    @notification.Title
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a class="dropdown-item">
+                                Chưa có thông báo nào
+                            </a>
+                        }
+                    </div>
+                </div>
+
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle text-black" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @{
@@ -48,22 +72,20 @@
         
         @if (!string.IsNullOrEmpty(userRole))
         {
-            <a class="text-black" asp-area="" asp-controller="Home" asp-action="Admin">Home</a>
-
             if (userRole == "Admin")
             {
                 <a class="text-black" asp-area="" asp-controller="Users" asp-action="Index">User</a>
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create">Create Request</a>
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id="">Request</a>
             }
             else if (userRole == "Staff")
             {
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id="">Request</a>
             }
             else if (userRole == "Client")
             {
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create">Create Request</a>
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index">Request</a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id="">Request</a>
             }
         }
     </div>

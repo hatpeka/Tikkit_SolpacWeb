@@ -17,5 +17,6 @@ namespace Tikkit_SolpacWeb.Data
         public DbSet<Tikkit_SolpacWeb.Models.Requests> Requests { get; set; } = default!;
 
         public DbSet<Tikkit_SolpacWeb.Models.Users>? Users { get; set; }
+        public DbSet<Tikkit_SolpacWeb.Models.Notification> Notification { get; set; }
     }
 }
