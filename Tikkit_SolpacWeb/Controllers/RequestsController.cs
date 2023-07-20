@@ -621,7 +621,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 ModelState.AddModelError("File", "An error occurred while processing the file. Please make sure the file format is correct.");
                 return RedirectToAction("Index");
             }
-            return RedirectToAction("Staff", "Home");
+            return RedirectToAction("Index");
         }
         private bool RequestsExists(int id)
         {
