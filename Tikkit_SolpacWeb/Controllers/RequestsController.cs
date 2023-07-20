@@ -54,7 +54,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
                 (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
                 (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
-                (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
+                (!toDate.HasValue || r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59)) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
                 (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
@@ -116,19 +116,20 @@ namespace Tikkit_SolpacWeb.Controllers
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile? Image)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile? ImagePath)
         {
-            if (Image != null && Image.Length > 0)
+            if (ImagePath != null && ImagePath.Length > 0)
             {
                 string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
-                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(Image.FileName);
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ImagePath.FileName);
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await Image.CopyToAsync(fileStream);
+                    await ImagePath.CopyToAsync(fileStream);
                 }
                 requests.ImagePath = "/uploads/" + uniqueFileName;
             }
+
             if (ModelState.IsValid)
             {
                 var requestUser = _context.Users.SingleOrDefault(u => u.ID == requests.RequestPersonID);
@@ -418,10 +419,10 @@ namespace Tikkit_SolpacWeb.Controllers
             var requests = _context.Requests.AsQueryable();
 
             requests = requests.Where(r =>
-                (userRole != "Staff" || (r.Status == "Pending" || r.Supporter == userName)) &&
-                (userRole == "Staff" || r.CreatePerson == userName) &&
+                (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
+                (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
                 (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
-                (!toDate.HasValue || r.RequestDate <= toDate.Value) &&
+                (!toDate.HasValue || r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59)) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
                 (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&

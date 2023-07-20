@@ -10,16 +10,20 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using Tikkit_SolpacWeb.Data;
 using Tikkit_SolpacWeb.Models;
+using Tikkit_SolpacWeb.Services.Email;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
     public class UsersController : Controller
     {
         private readonly Tikkit_SolpacWebContext _context;
+        private readonly EmailSender _emailSender;
 
-        public UsersController(Tikkit_SolpacWebContext context)
+
+        public UsersController(Tikkit_SolpacWebContext context, EmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
         private Users GetCurrentUser()
@@ -72,6 +76,33 @@ namespace Tikkit_SolpacWeb.Controllers
                 return RedirectToAction("Index", "Requests");
                 
             }
+            return RedirectToAction("Login");
+        }
+
+
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _context.Users
+                    .FirstOrDefault(u => u.Email == email);
+                if (user == null)
+                {
+                    // Don't reveal that the user does not exist
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                string emailSubject = $"Mật khẩu ứng dụng";
+                string emailMessage = $"Chào {user.Name}, mật khẩu của bạn là {user.Password}";
+                await _emailSender.SendEmailAsync(email, emailSubject, emailMessage);
+            }
+
             return RedirectToAction("Login");
         }
 

@@ -38,9 +38,9 @@
     <input class="form-control mr-sm-2" type="text" name="project" placeholder="Dự án" aria-label="Project" value="@Context.Request.Query["project"]">
     <select class="form-control mr-sm-2" name="status">
         <option value="" selected="@(string.IsNullOrEmpty(statusSelected))">Trạng thái</option>
-        <option value="Done" selected="@(statusSelected == "Done")">Đã hoàn thành</option>
-        <option value="Processing" selected="@(statusSelected == "Processing")">Đang xử lý</option>
-        <option value="Pending" selected="@(statusSelected == "Pending")">Chờ xử lý</option>
+        <option value="Done" selected="@(statusSelected == "Đã hoàn thành")">Đã hoàn thành</option>
+        <option value="Processing" selected="@(statusSelected == "Đang xử lý")">Đang xử lý</option>
+        <option value="Pending" selected="@(statusSelected == "Chờ xử lý")">Chờ xử lý</option>
     </select>
     <input class="form-control mr-sm-2" type="text" name="supporter" placeholder="Người hỗ trợ" aria-label="Supporter" value="@Context.Request.Query["supporter"]">
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
@@ -55,6 +55,8 @@
         <input type="file" id="file" name="file">
     </form>
     <button id="importButton" class="btn btn-primary">Nhập file</button>
+
+    <a class="btn btn-success" asp-controller="Requests" asp-action="Create">Tạo yêu cầu</a>
 <br />
 <br />
 
@@ -203,7 +205,7 @@
                     }
                     @if (!string.IsNullOrEmpty(phoneNumber))
                     {
-                            <a href="@zaloLink" target="_blank"><i class="bi bi-telephone-fill"></i></a>
+                            <a href="@zaloLink" target="_blank"><i class="bi bi-envelope-fill"></i></a>
                     }
                     else
                     {
