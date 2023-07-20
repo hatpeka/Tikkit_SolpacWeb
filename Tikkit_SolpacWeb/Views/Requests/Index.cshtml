@@ -38,9 +38,9 @@
     <input class="form-control mr-sm-2" type="text" name="project" placeholder="Dự án" aria-label="Project" value="@Context.Request.Query["project"]">
     <select class="form-control mr-sm-2" name="status">
         <option value="" selected="@(string.IsNullOrEmpty(statusSelected))">Trạng thái</option>
-        <option value="Done" selected="@(statusSelected == "Đã hoàn thành")">Đã hoàn thành</option>
-        <option value="Processing" selected="@(statusSelected == "Đang xử lý")">Đang xử lý</option>
-        <option value="Pending" selected="@(statusSelected == "Chờ xử lý")">Chờ xử lý</option>
+        <option value="Đã hoàn thành" selected="@(statusSelected == "Đã hoàn thành")">Đã hoàn thành</option>
+        <option value="Đang xử lý" selected="@(statusSelected == "Đang xử lý")">Đang xử lý</option>
+        <option value="Đang chờ" selected="@(statusSelected == "Đang chờ")">Đang chờ</option>
     </select>
     <input class="form-control mr-sm-2" type="text" name="supporter" placeholder="Người hỗ trợ" aria-label="Supporter" value="@Context.Request.Query["supporter"]">
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
