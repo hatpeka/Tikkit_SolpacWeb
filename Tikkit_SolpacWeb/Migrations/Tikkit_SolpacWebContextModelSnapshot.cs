@@ -60,11 +60,9 @@ namespace Tikkit_SolpacWeb.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestNo"), 1L, 1);
 
                     b.Property<string>("Contact")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ContentsOfRequest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatePerson")
@@ -86,7 +84,6 @@ namespace Tikkit_SolpacWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Project")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
@@ -98,7 +95,7 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("RequestPerson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RequestPersonID")
+                    b.Property<int?>("RequestPersonID")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("StartDate")
@@ -108,7 +105,6 @@ namespace Tikkit_SolpacWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubjectOfRequest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SupportContent")

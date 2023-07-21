@@ -459,8 +459,6 @@ namespace Tikkit_SolpacWeb.Controllers
                 worksheet.Cells[1, 18].Value = "Nguyên nhân";
                 worksheet.Cells[1, 19].Value = "Nội dung hỗ trợ";
                 worksheet.Cells[1, 20].Value = "Tổng thời gian";
-                worksheet.Cells[1, 21].Value = "Liên hệ";
-
 
                 // Đổ dữ liệu vào bảng
                 for (int i = 0; i < requestsList.Count; i++)

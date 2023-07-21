@@ -24,10 +24,7 @@
     }
     <input class="form-control mr-sm-2" type="date" name="fromDate" placeholder="From Date" aria-label="From Date" value="@Context.Request.Query["fromDate"]">
     <input class="form-control mr-sm-2" type="date" name="toDate" placeholder="To Date" aria-label="To Date" value="@Context.Request.Query["toDate"]">
-    @if (ViewBag.UserRole != "Staff")
-    {
-        <input class="form-control mr-sm-2" type="text" name="requestPerson" placeholder="Người yêu cầu" aria-label="Request Person" value="@Context.Request.Query["requestperson"]">
-    }
+    <input class="form-control mr-sm-2" type="text" name="partner" placeholder="Công ty" aria-label="Partner" value="@Context.Request.Query["partner"]">
     <select class="form-control mr-sm-2" name="priority">
 
         <option value="" selected="@(string.IsNullOrEmpty(prioritySelected))">Mức ưu tiên</option>
@@ -36,7 +33,6 @@
     </select>
     @if(ViewBag.UserRole == "Staff")
     {
-        <input class="form-control mr-sm-2" type="text" name="partner" placeholder="Công ty" aria-label="Partner" value="@Context.Request.Query["partner"]">
         <input class="form-control mr-sm-2" type="text" name="createPerson" placeholder="Người tạo" aria-label="Create Person" value="@Context.Request.Query["createPerson"]">
     }
     <input class="form-control mr-sm-2" type="text" name="project" placeholder="Dự án" aria-label="Project" value="@Context.Request.Query["project"]">
@@ -217,12 +213,9 @@
                     }
                 </td>
                 }
-                @if (ViewBag.UserRole == "Staff")
-                {
-                    <td>
-                        <a asp-action="EditforStaff" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Edit"><i class="bi bi-pencil-square"></i></a>
-                    </td>
-                }                
+                <td>
+                    <a asp-action="EditforStaff" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Edit"><i class="bi bi-pencil-square"></i></a>
+                </td>
             </tr>
             order++;
         }
