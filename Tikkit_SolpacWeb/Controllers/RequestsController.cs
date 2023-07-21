@@ -288,7 +288,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // POST: Requests/Response/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StaffResponse(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent")] Requests request)
+        public async Task<IActionResult> StaffResponse(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent,RequestPersonID,Project,SubjectOfRequest,ContentsOfRequest,Contact")] Requests request)
         {
             if (id != request.RequestNo)
             {
@@ -305,6 +305,21 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 return NotFound();
             }
+
+
+            ModelState.Remove("RequestPersonID");
+            ModelState.Remove("Project");
+            ModelState.Remove("SubjectOfRequest");
+            ModelState.Remove("ContentsOfRequest");
+            ModelState.Remove("Contact");
+
+            // Assign the current values to the required fields
+            request.RequestPersonID = existingRequest.RequestPersonID;
+            request.Project = existingRequest.Project;
+            request.SubjectOfRequest = existingRequest.SubjectOfRequest;
+            request.ContentsOfRequest = existingRequest.ContentsOfRequest;
+            request.Contact = existingRequest.Contact;
+
 
             var requestPerson = await _context.Users.FirstOrDefaultAsync(u => u.ID == existingRequest.RequestPersonID);
             string requestPersonEmail = requestPerson?.Email;
