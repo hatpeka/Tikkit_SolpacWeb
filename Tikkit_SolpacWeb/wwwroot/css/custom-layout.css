@@ -96,7 +96,7 @@ boydy{
 }
 
 .short-input {
-    width: 80%; /* Adjust this value as needed */
+    width: 90%; /* Adjust this value as needed */
     margin: 0 auto; /* Center the input fields if they're block elements */
 }
 
