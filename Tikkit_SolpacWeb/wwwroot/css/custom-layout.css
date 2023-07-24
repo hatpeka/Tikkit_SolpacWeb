@@ -95,5 +95,16 @@ boydy{
     max-width: 65%; /* Adjust to your preference */
 }
 
+.short-input {
+    width: 80%; /* Adjust this value as needed */
+    margin: 0 auto; /* Center the input fields if they're block elements */
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    display: inline-block;
+}
 
 
