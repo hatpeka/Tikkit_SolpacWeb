@@ -17,7 +17,7 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="container">
+<div class="container form-container">
     <form method="get" class="row">
         @{
             var prioritySelected = Context.Request.Query["priority"];
@@ -77,13 +77,18 @@
 
     
 <br />
-    <a class="btn btn-outline-info" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
+    <div class="d-flex justify-content-center">
+        <a class="btn btn-outline-info mx-1" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
+        <button id="importButton" class="btn btn-primary mx-1">Nhập file</button>
+        @if (ViewBag.UserRole != "Staff")
+        {
+            <a class="btn btn-success mx-1" asp-controller="Requests" asp-action="Create">Tạo yêu cầu</a>
+        }
+    </div>
+
     <form id="importForm" asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" style="display: none;">
         <input type="file" id="file" name="file">
     </form>
-    <button id="importButton" class="btn btn-primary">Nhập file</button>
-
-    <a class="btn btn-success" asp-controller="Requests" asp-action="Create">Tạo yêu cầu</a>
 <br />
 <br />
 

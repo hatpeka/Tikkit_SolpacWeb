@@ -55,7 +55,7 @@ namespace Tikkit_SolpacWeb.Models
         public string? Reason { get; set; }
         public string? SupportContent { get; set; }
         [Required(ErrorMessage = "Số điện thoại là bắt buộc.")]
-        public string? Contact { get; set; }
+        public string Contact { get; set; }
         public string? Status { get; set; } = "Đang chờ";
     }
 }

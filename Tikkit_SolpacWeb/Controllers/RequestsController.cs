@@ -41,6 +41,9 @@ namespace Tikkit_SolpacWeb.Controllers
         [RequireLogin]
         public async Task<IActionResult> Index(int? id, string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
         {
+            int currentMonth = DateTime.Now.Month;
+            int currentYear = DateTime.Now.Year;
+
             string userRole = HttpContext.Session.GetString("UserRole");
             string userName = HttpContext.Session.GetString("UserName");
             var requests = _context.Requests.AsQueryable();
@@ -61,11 +64,13 @@ namespace Tikkit_SolpacWeb.Controllers
                 (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
                 (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
                 (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
-                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search)) &&
+                (r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear)
             );
             var userId = HttpContext.Session.GetInt32("UserId");
             var notifications = _context.Notification
-                .Where(n => n.Target == userId) // Filter notifications based on the current userId
+                .Where(n => n.Target == userId)
+                .OrderByDescending(n => n.CreateTime)
                 .ToList();
             ViewBag.Notifications = notifications;
             return View(await requests.ToListAsync());
@@ -94,10 +99,13 @@ namespace Tikkit_SolpacWeb.Controllers
         public IActionResult Create()
         {
             string userRole = HttpContext.Session.GetString("UserRole");
+            ViewBag.UserRole = userRole;
+
             var users = _context.Users.ToList();
             ViewBag.Users = users;
 
             var userId = HttpContext.Session.GetInt32("UserId");
+            ViewBag.UserID = userId;
             var notifications = _context.Notification
                 .Where(n => n.Target == userId) // Filter notifications based on the current userId
                 .ToList();
@@ -116,8 +124,17 @@ namespace Tikkit_SolpacWeb.Controllers
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority,Contact")] Requests requests, IFormFile? ImagePath)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority")] Requests requests, IFormFile? ImagePath)
         {
+            string userRole = HttpContext.Session.GetString("UserRole");
+            ViewBag.UserRole = userRole;
+
+            var users = _context.Users.ToList();
+            ViewBag.Users = users;
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            ViewBag.UserID = userId;
+
             if (ImagePath != null && ImagePath.Length > 0)
             {
                 string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
@@ -130,12 +147,17 @@ namespace Tikkit_SolpacWeb.Controllers
                 requests.ImagePath = "/uploads/" + uniqueFileName;
             }
 
+            ModelState.Remove("Contact");
+            ModelState.Remove("RequestDate");
+
             if (ModelState.IsValid)
             {
                 var requestUser = _context.Users.SingleOrDefault(u => u.ID == requests.RequestPersonID);
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
                 requests.RequestPerson = requestUser.Name;
                 requests.Partner = requestUser.Partner;
+                requests.Contact = requestUser.Phone;
+                requests.RequestDate = DateTime.Now;
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
@@ -429,6 +451,9 @@ namespace Tikkit_SolpacWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> ExportToExcel(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
         {
+            int currentMonth = DateTime.Now.Month;
+            int currentYear = DateTime.Now.Year;
+
             string userRole = HttpContext.Session.GetString("UserRole");
             string userName = HttpContext.Session.GetString("UserName");
             var requests = _context.Requests.AsQueryable();
@@ -444,7 +469,8 @@ namespace Tikkit_SolpacWeb.Controllers
                 (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
                 (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
                 (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
-                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search)) &&
+                (r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear)
             );
 
             var requestsList = await requests.ToListAsync();
