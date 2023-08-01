@@ -259,6 +259,24 @@
     </tbody>
 </table>
 
+
+<div>
+    @{
+        int num = ViewBag.PageNo + 1;
+    }
+    @if (ViewBag.PageNo > 0)
+    {
+        <a href="@Url.Action("Index", new { pageNo = ViewBag.PageNo - 1, pageSize = ViewBag.PageSize })">Trang trước</a>
+    }
+
+    <span>Trang @num</span>
+
+    @if (Model.Count() == ViewBag.PageSize)
+    {
+        <a href="@Url.Action("Index", new { pageNo = ViewBag.PageNo + 1, pageSize = ViewBag.PageSize })">Trang tiếp</a>
+    }
+</div>
+
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog custom-modal-dialog" role="document">
         <div class="modal-content">

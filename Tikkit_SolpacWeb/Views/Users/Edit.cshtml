@@ -43,22 +43,36 @@
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Role" class="control-label">Nhóm người dùng</label>
-                <select asp-for="Role" class="form-control">
-                    <option value="Admin">Admin</option>
-                    <option value="Staff">Staff</option>
-                    <option value="Client">Client</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label">Trạng thái</label>
-                <select asp-for="Status" class="form-control">
-                    <option value="Working">Working</option>
-                    <option value="Stopped">Stopped</option>
-                </select>
-            </div>
+            @if (ViewBag.UserRole == "Admin")
+            {
+                <div class="form-group">
+                    <label asp-for="Role" class="control-label">Nhóm người dùng</label>
+                    <select asp-for="Role" class="form-control">
+                        <option value="Admin">Admin</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Client">Client</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="Role" />
+            }
+            @if (ViewBag.UserRole == "Admin")
+            {
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label">Trạng thái</label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="Working">Working</option>
+                        <option value="Stopped">Stopped</option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="Status" />
+            }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -66,9 +80,13 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to list</a>
-</div>
+@if (ViewBag.UserRole == "Admin")
+{
+    <div>
+        <a asp-action="Index">Back to list</a>
+    </div>
+}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -39,7 +39,7 @@ namespace Tikkit_SolpacWeb.Controllers
 
         // GET: Requests
         [RequireLogin]
-        public async Task<IActionResult> Index(int? id, string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)
+        public async Task<IActionResult> Index(int? id, string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter, int pageNo = 0, int pageSize = 20)
         {
             int currentMonth = DateTime.Now.Month;
             int currentYear = DateTime.Now.Year;
@@ -56,17 +56,51 @@ namespace Tikkit_SolpacWeb.Controllers
             requests = requests.Where(r =>
                 (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
                 (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
-                (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
-                (!toDate.HasValue || r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59)) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
                 (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
                 (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
                 (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
                 (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
-                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search)) &&
-                (r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear)
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
             );
+
+            if (!fromDate.HasValue && !toDate.HasValue)
+            {
+                requests = requests.Where(r => r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear);
+            }
+            else
+            {
+                if (fromDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate >= fromDate.Value);
+                }
+                if (toDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+                }
+            }
+
+            if (!fromDate.HasValue && !toDate.HasValue)
+            {
+                requests = requests.Where(r => r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear);
+            }
+            else
+            {
+                if (fromDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate >= fromDate.Value);
+                }
+                if (toDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+                }
+            }
+            requests = requests.Skip(pageNo * pageSize).Take(pageSize);
+
+            ViewBag.PageNo = pageNo;
+            ViewBag.PageSize = pageSize;
+
             var userId = HttpContext.Session.GetInt32("UserId");
             var notifications = _context.Notification
                 .Where(n => n.Target == userId)
@@ -440,7 +474,6 @@ namespace Tikkit_SolpacWeb.Controllers
                             throw;
                         }
                     }
-
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -461,17 +494,46 @@ namespace Tikkit_SolpacWeb.Controllers
             requests = requests.Where(r =>
                 (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
                 (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
-                (!fromDate.HasValue || r.RequestDate >= fromDate.Value) &&
-                (!toDate.HasValue || r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59)) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
                 (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
                 (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
                 (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
                 (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
-                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search)) &&
-                (r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear)
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
             );
+
+            if (!fromDate.HasValue && !toDate.HasValue)
+            {
+                requests = requests.Where(r => r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear);
+            }
+            else
+            {
+                if (fromDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate >= fromDate.Value);
+                }
+                if (toDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+                }
+            }
+
+            if (!fromDate.HasValue && !toDate.HasValue)
+            {
+                requests = requests.Where(r => r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear);
+            }
+            else
+            {
+                if (fromDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate >= fromDate.Value);
+                }
+                if (toDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+                }
+            }
 
             var requestsList = await requests.ToListAsync();
             // Tạo file Excel
@@ -661,6 +723,11 @@ namespace Tikkit_SolpacWeb.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("File", "An error occurred while processing the file. Please make sure the file format is correct.");
+                Debug.WriteLine("Error: " + ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                }
                 return RedirectToAction("Index");
             }
             return RedirectToAction("Index");

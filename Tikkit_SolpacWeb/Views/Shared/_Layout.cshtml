@@ -28,13 +28,17 @@
                         <i class="bi bi-bell-fill"></i>
                     </button>
                     <div class="dropdown-menu text-black" aria-labelledby="notificationDropdown">
+                        @{
+                            int order = 1;
+                        }
                         @if (ViewBag.Notifications != null && ((List<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications).Any())
                         {
                             foreach (var notification in (IEnumerable<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications)
                             {
                                 <a class="dropdown-item" href="@Url.Action("Index", "Requests", new { id = notification.RequestID })">
-                                    @notification.Title
+                                    @order.@notification.Title
                                 </a>
+                                order++;
                             }
                         }
                         else
@@ -51,6 +55,7 @@
                         <i class="bi bi-person-fill"></i>
                     </button>
                     <div class="dropdown-menu text-black" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" asp-controller="Users" asp-action="Edit" asp-route-id="@Context.Session.GetInt32("UserId")">Sửa thông tin</a>
                         <a class="dropdown-item" asp-controller="Users" asp-action="ChangePassword" asp-route-id="@Context.Session.GetInt32("UserId")">Đổi mật khẩu</a>
                         <a class="dropdown-item" asp-controller="Users" asp-action="Logout">Đăng xuất</a>
                     </div>

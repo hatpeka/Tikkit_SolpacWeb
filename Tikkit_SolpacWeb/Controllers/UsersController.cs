@@ -143,6 +143,10 @@ namespace Tikkit_SolpacWeb.Controllers
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
+            string userRole = HttpContext.Session.GetString("UserRole");
+            ViewBag.UserRole = userRole;
+
             var currentUser = GetCurrentUser();
             if (id == null || _context.Users == null)
             {
@@ -218,18 +222,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 }
 
                 // Redirect to the main page of the role after saving changes.
-                if (currentUser.Role == "Admin")
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else if (currentUser.Role == "Staff")
-                {
-                    return RedirectToAction("Staff", "Home");
-                }
-                else if (currentUser.Role == "Client")
-                {
-                    return RedirectToAction("Client", "Home");
-                }
+                return RedirectToAction("Index", "Requests");
             }
             return View(users);
         }
