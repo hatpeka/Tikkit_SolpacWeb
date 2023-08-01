@@ -158,7 +158,7 @@ namespace Tikkit_SolpacWeb.Controllers
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority")] Requests requests, IFormFile? ImagePath)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority")] RequestsCreateViewModel requestsCVm, IFormFile? ImagePath)
         {
             string userRole = HttpContext.Session.GetString("UserRole");
             ViewBag.UserRole = userRole;
@@ -178,18 +178,30 @@ namespace Tikkit_SolpacWeb.Controllers
                 {
                     await ImagePath.CopyToAsync(fileStream);
                 }
-                requests.ImagePath = "/uploads/" + uniqueFileName;
+                requestsCVm.ImagePath = "/uploads/" + uniqueFileName;
             }
 
             ModelState.Remove("Contact");
 
             if (ModelState.IsValid)
             {
-                var requestUser = _context.Users.SingleOrDefault(u => u.ID == requests.RequestPersonID);
+                var requestUser = _context.Users.SingleOrDefault(u => u.ID == requestsCVm.RequestPersonID);
+                var requests = new Requests
+                {
+                    RequestDate = DateTime.Now,
+                    RequestPersonID = requestsCVm.RequestPersonID,
+                    Project = requestsCVm.Project,
+                    SubjectOfRequest = requestsCVm.SubjectOfRequest,
+                    ContentsOfRequest = requestsCVm.ContentsOfRequest,
+                    Priority = requestsCVm.Priority,
+                    ImagePath = requestsCVm.ImagePath
+                };
+
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
                 requests.RequestPerson = requestUser.Name;
                 requests.Partner = requestUser.Partner;
                 requests.Contact = requestUser.Phone;
+
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
@@ -227,7 +239,7 @@ namespace Tikkit_SolpacWeb.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(requests);
+            return View(requestsCVm);
         }
 
         // GET: Requests/Edit/5

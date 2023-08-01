@@ -40,22 +40,17 @@ namespace Tikkit_SolpacWeb.Models
         }
         public string? Priority { get; set; }
         public string? RequestPerson { get; set; }
-        [Required(ErrorMessage = "Người yêu cầu là bắt buộc.")]
         public int? RequestPersonID { get; set; }
         public string? CreatePerson { get; set; }
         public string? Supporter { get; set; }
         public string? Partner { get; set; }
-        [Required(ErrorMessage = "Dự án là bắt buộc.")]
         public string? Project { get; set; }
-        [Required(ErrorMessage = "Tiêu đề là bắt buộc.")]
         public string? SubjectOfRequest { get; set; }
-        [Required(ErrorMessage = "Nội dung là bắt buộc.")]
         public string? ContentsOfRequest { get; set; }
         public string? ImagePath { get; set; }
         public string? Reason { get; set; }
         public string? SupportContent { get; set; }
-        [Required(ErrorMessage = "Số điện thoại là bắt buộc.")]
-        public string Contact { get; set; }
+        public string? Contact { get; set; }
         public string? Status { get; set; } = "Đang chờ";
     }
 }
