@@ -182,7 +182,6 @@ namespace Tikkit_SolpacWeb.Controllers
             }
 
             ModelState.Remove("Contact");
-            ModelState.Remove("RequestDate");
 
             if (ModelState.IsValid)
             {
@@ -191,7 +190,6 @@ namespace Tikkit_SolpacWeb.Controllers
                 requests.RequestPerson = requestUser.Name;
                 requests.Partner = requestUser.Partner;
                 requests.Contact = requestUser.Phone;
-                requests.RequestDate = DateTime.Now;
                 _context.Add(requests);
                 await _context.SaveChangesAsync();
 
