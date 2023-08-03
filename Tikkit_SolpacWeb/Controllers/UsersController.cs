@@ -71,6 +71,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 HttpContext.Session.SetString("UserRole", User.Role);
                 HttpContext.Session.SetString("UserName", User.Name);
                 HttpContext.Session.SetString("Partner", User.Partner);
+                HttpContext.Session.SetInt32("PartnerID", User.PartnerID);
 
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 return RedirectToAction("Index", "Requests");

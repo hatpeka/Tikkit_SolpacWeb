@@ -34,11 +34,25 @@
             
             <div class="form-group">
                 <label asp-for="Project" class="control-label">Dự án</label>
-                <select id="Project" name="Project" class="form-control">
-                    <option value="">Chọn dự án</option>
-                </select>
+                @if (ViewBag.UserRole == "Client")
+                {
+                    <select asp-for="Project" class="form-control">
+                        <option value="">Chọn dự án</option>
+                        @foreach (var project in ViewBag.Projects)
+                        {
+                            <option value="@project.Name">@project.Name</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <select id="Project" name="Project" class="form-control">
+                        <option value="">Chọn dự án</option>
+                    </select>
+                }
                 <span asp-validation-for="Project" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="SubjectOfRequest" class="control-label">Tiêu đề</label>
                 <input asp-for="SubjectOfRequest" class="form-control" />

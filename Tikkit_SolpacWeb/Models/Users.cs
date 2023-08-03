@@ -9,7 +9,7 @@ namespace Tikkit_SolpacWeb.Models
         public int ID { get; set; }
         public string Name { get; set; }
 
-        public int? PartnerID { get; set; }
+        public int PartnerID { get; set; }
         public string? Partner { get; set; }
         public string Address { get; set; }
         public string Sex { get; set; }

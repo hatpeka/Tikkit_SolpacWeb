@@ -149,6 +149,16 @@ namespace Tikkit_SolpacWeb.Controllers
             string userRole = HttpContext.Session.GetString("UserRole");
             ViewBag.UserRole = userRole;
 
+            if (userRole == "Client")
+            {
+                List<Projects> projects = new List<Projects>();
+                int? partnerID = HttpContext.Session.GetInt32("PartnerID");
+                projects = _context.Projects
+                    .Where(p => p.PartnerID == partnerID)
+                    .ToList();
+                ViewBag.Projects = projects;
+            }
+
             var users = _context.Users.ToList();
             ViewBag.Users = users;
 
