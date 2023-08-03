@@ -111,15 +111,25 @@ namespace Tikkit_SolpacWeb.Controllers
         [RequireLogin]
         public async Task<IActionResult> Index()
         {
-              return _context.Users != null ? 
-                          View(await _context.Users.ToListAsync()) :
-                          Problem("Entity set 'Tikkit_SolpacWebContext.Users'  is null.");
+            var users = await _context.Users.ToListAsync();
+
+            var partners = await _context.Partners.ToListAsync();
+
+            foreach (var user in users)
+            {
+                var partner = partners.FirstOrDefault(p => p.PartnerID == user.PartnerID);
+            }
+
+            return View(users);
         }
 
 
         // GET: Users/Create
         public IActionResult Create()
         {
+            var partners = _context.Partners.ToList();
+            ViewBag.Partners = partners;
+
             return View();
         }
 
@@ -128,10 +138,16 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,Partner,Address,Sex,Phone,Email,Password,RePassword,Role,Status")] Users users)
+        public async Task<IActionResult> Create([Bind("ID,Name,PartnerID,Partner,Address,Sex,Phone,Email,Password,RePassword,Role,Status")] Users users)
         {
+
+            var partners = _context.Partners.ToList();
+            ViewBag.Partners = partners;
+
             if (ModelState.IsValid)
             {
+                var partner = partners.FirstOrDefault(p => p.PartnerID == users.PartnerID);
+                users.Partner = partner.Name;
                 users.RePassword = null;
                 _context.Add(users);
                 await _context.SaveChangesAsync();
@@ -143,6 +159,9 @@ namespace Tikkit_SolpacWeb.Controllers
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
+            var partners = _context.Partners.ToList();
+            ViewBag.Partners = partners;
 
             string userRole = HttpContext.Session.GetString("UserRole");
             ViewBag.UserRole = userRole;
@@ -168,8 +187,11 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Partner,Address,Sex,Phone,Email,Role,Status")] Users users)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PartnerID,Address,Sex,Phone,Email,Role,Status")] Users users)
         {
+            var partners = _context.Partners.ToList();
+            ViewBag.Partners = partners;
+
             if (id != users.ID)
             {
                 return NotFound();
@@ -182,6 +204,8 @@ namespace Tikkit_SolpacWeb.Controllers
                 return NotFound();
             }
 
+            var partner = partners.FirstOrDefault(p => p.PartnerID == users.PartnerID);
+
             ModelState.Remove("Password");
             ModelState.Remove("RePassword");
             if (ModelState.IsValid)
@@ -189,7 +213,14 @@ namespace Tikkit_SolpacWeb.Controllers
                 try
                 {
                     existingUser.Name = users.Name;
-                    existingUser.Partner = users.Partner;
+                    existingUser.PartnerID = users.PartnerID;
+
+                    // Cập nhật tên của partner dựa trên PartnerID
+                    if (partner != null)
+                    {
+                        existingUser.Partner = partner.Name;
+                    }
+
                     existingUser.Address = users.Address;
                     existingUser.Sex = users.Sex;
                     existingUser.Phone = users.Phone;
@@ -220,8 +251,11 @@ namespace Tikkit_SolpacWeb.Controllers
                 {
                     return NotFound();
                 }
+                if (currentUser.Role == "Admin")
+                {
+                    return RedirectToAction("Index", "Users");
 
-                // Redirect to the main page of the role after saving changes.
+                }
                 return RedirectToAction("Index", "Requests");
             }
             return View(users);

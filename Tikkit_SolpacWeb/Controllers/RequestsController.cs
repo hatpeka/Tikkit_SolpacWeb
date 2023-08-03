@@ -129,6 +129,23 @@ namespace Tikkit_SolpacWeb.Controllers
             return PartialView("_DetailsPartial",requests);
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetProjects(int requesterId)
+        //{
+        //    // Truy vấn để lấy partnerId từ requesterId
+        //    var partnerId = _context.Requests
+        //                        .Where(r => r.RequestPersonID == requesterId)
+        //                        .Select(r => r.PartnerID)
+        //                        .FirstOrDefault();
+
+        //    var projects = await _context.Projects
+        //                    .Where(p => p.PartnerID == partnerId)
+        //                    .ToListAsync();
+
+        //    return Json(projects);
+        //}
+
+
         // GET: Requests/Create
         public IActionResult Create()
         {

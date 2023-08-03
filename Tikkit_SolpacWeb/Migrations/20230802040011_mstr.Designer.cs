@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tikkit_SolpacWeb.Data;
 
@@ -11,9 +12,10 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    partial class Tikkit_SolpacWebContextModelSnapshot : ModelSnapshot
+    [Migration("20230802040011_mstr")]
+    partial class mstr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,17 +55,17 @@ namespace Tikkit_SolpacWeb.Migrations
 
             modelBuilder.Entity("Tikkit_SolpacWeb.Models.Partners", b =>
                 {
-                    b.Property<int>("PartnerID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PartnerID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PartnerID");
+                    b.HasKey("ID");
 
                     b.ToTable("Partners");
                 });
@@ -180,9 +182,6 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<string>("Partner")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PartnerID")
-                        .HasColumnType("int");
 
                     b.Property<string>("Password")
                         .IsRequired()

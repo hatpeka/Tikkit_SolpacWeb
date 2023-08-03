@@ -7,6 +7,7 @@ namespace Tikkit_SolpacWeb.Models
         public string? Priority { get; set; }
         [Required(ErrorMessage = "Người yêu cầu là bắt buộc.")]
         public int? RequestPersonID { get; set; }
+        public int PartnerID { get; set; }
         [Required(ErrorMessage = "Dự án là bắt buộc.")]
         public string? Project { get; set; }
         [Required(ErrorMessage = "Tiêu đề là bắt buộc.")]

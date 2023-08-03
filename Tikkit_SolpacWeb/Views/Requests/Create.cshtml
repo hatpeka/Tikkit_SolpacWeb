@@ -34,7 +34,9 @@
             
             <div class="form-group">
                 <label asp-for="Project" class="control-label">Dự án</label>
-                <input asp-for="Project" class="form-control" />
+                <select id="Project" name="Project" class="form-control">
+                    <option value="">Chọn dự án</option>
+                </select>
                 <span asp-validation-for="Project" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -73,3 +75,22 @@
     }
 }
 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#PartnerID").change(function () {
+            var partnerId = $(this).val();
+
+            $.get("/RequestsController/GetProjects", { partnerId: partnerId }, function (data) {
+                var projectSelect = $("#Project");
+
+                projectSelect.empty();
+
+                $.each(data, function (index, project) {
+                    projectSelect.append('<option value="' + project.id + '">' + project.name + '</option>');
+                });
+            });
+        });
+    });
+</script>

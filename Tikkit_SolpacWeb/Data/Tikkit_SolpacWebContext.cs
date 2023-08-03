@@ -14,9 +14,11 @@ namespace Tikkit_SolpacWeb.Data
         {
         }
 
-        public DbSet<Tikkit_SolpacWeb.Models.Requests> Requests { get; set; } = default!;
+        public DbSet<Requests> Requests { get; set; } = default!;
 
-        public DbSet<Tikkit_SolpacWeb.Models.Users>? Users { get; set; }
-        public DbSet<Tikkit_SolpacWeb.Models.Notification> Notification { get; set; }
+        public DbSet<Users>? Users { get; set; }
+        public DbSet<Notification> Notification { get; set; }
+        public DbSet<Partners> Partners { get; set; }
+        public DbSet<Projects> Projects { get; set; }
     }
 }

@@ -16,9 +16,15 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Partner" class="control-label">Công ty</label>
-                <input asp-for="Partner" class="form-control" />
-                <span asp-validation-for="Partner" class="text-danger"></span>
+                <label asp-for="PartnerID" class="control-label">Công ty</label>
+                <select asp-for="PartnerID" class="form-control">
+                    <option value="">Công ty</option>
+                    @foreach (var partners in ViewBag.Partners)
+                    {
+                        <option value="@partners.PartnerID">@partners.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="PartnerID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Address" class="control-label">Địa chỉ</label>
