@@ -129,21 +129,18 @@ namespace Tikkit_SolpacWeb.Controllers
             return PartialView("_DetailsPartial",requests);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetProjects(int requesterId)
-        //{
-        //    // Truy vấn để lấy partnerId từ requesterId
-        //    var partnerId = _context.Requests
-        //                        .Where(r => r.RequestPersonID == requesterId)
-        //                        .Select(r => r.PartnerID)
-        //                        .FirstOrDefault();
+        public JsonResult GetProjects(int partnerId)
+        {
+            var user = _context.Users.Find(partnerId);
 
-        //    var projects = await _context.Projects
-        //                    .Where(p => p.PartnerID == partnerId)
-        //                    .ToListAsync();
+            var projects = _context.Projects
+                .Where(p => p.PartnerID == user.PartnerID)
+                .Select(p => p.Name) // Chỉ lấy trường Name
+                .ToList();
 
-        //    return Json(projects);
-        //}
+            return Json(projects);
+        }
+
 
 
         // GET: Requests/Create

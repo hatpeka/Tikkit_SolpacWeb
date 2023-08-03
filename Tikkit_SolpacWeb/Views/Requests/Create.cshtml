@@ -76,21 +76,24 @@
 }
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript">
+<script>
     $(document).ready(function () {
-        $("#PartnerID").change(function () {
+        // Khi giá trị của dropdown của users thay đổi
+        $('select[name="RequestPersonID"]').change(function () {
             var partnerId = $(this).val();
 
-            $.get("/RequestsController/GetProjects", { partnerId: partnerId }, function (data) {
-                var projectSelect = $("#Project");
+            // Gửi yêu cầu AJAX đến hành động GetProjects
+            $.getJSON('/Requests/GetProjects', { partnerId: partnerId }, function (data) {
+                var projectDropdown = $('#Project');
+                projectDropdown.empty();
 
-                projectSelect.empty();
-
-                $.each(data, function (index, project) {
-                    projectSelect.append('<option value="' + project.id + '">' + project.name + '</option>');
+                // Duyệt qua danh sách tên dự án trả về
+                $.each(data, function (index, projectName) {
+                    // Thêm mỗi tên dự án vào dropdown của projects
+                    projectDropdown.append('<option value="' + projectName + '">' + projectName + '</option>');
                 });
             });
         });
     });
 </script>
+
