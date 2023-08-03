@@ -102,12 +102,34 @@ namespace Tikkit_SolpacWeb.Controllers
             ViewBag.PageSize = pageSize;
 
             var userId = HttpContext.Session.GetInt32("UserId");
+
+            var unreadNotificationCount = _context.Notification.Count(n => !n.IsRead && n.Target == userId);
+            ViewBag.UnreadNotificationCount = unreadNotificationCount;
             var notifications = _context.Notification
                 .Where(n => n.Target == userId)
                 .OrderByDescending(n => n.CreateTime)
                 .ToList();
             ViewBag.Notifications = notifications;
             return View(await requests.ToListAsync());
+        }
+
+
+        [HttpPost]
+        public IActionResult MarkNotificationAsRead(int id)
+        {
+            var notification = _context.Notification.Find(id);
+            if (notification != null)
+            {
+                notification.IsRead = true;
+                _context.SaveChanges();
+
+                // Lấy số lượng thông báo chưa đọc
+                var unreadNotificationCount = _context.Notification.Count(n => !n.IsRead);
+
+                // Trả về số lượng thông báo chưa đọc
+                return Ok(unreadNotificationCount);
+            }
+            return BadRequest();
         }
 
 
@@ -135,7 +157,7 @@ namespace Tikkit_SolpacWeb.Controllers
 
             var projects = _context.Projects
                 .Where(p => p.PartnerID == user.PartnerID)
-                .Select(p => p.Name) // Chỉ lấy trường Name
+                .Select(p => p.Name)
                 .ToList();
 
             return Json(projects);

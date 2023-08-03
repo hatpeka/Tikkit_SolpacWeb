@@ -92,18 +92,14 @@
 
 <script>
     $(document).ready(function () {
-        // Khi giá trị của dropdown của users thay đổi
         $('select[name="RequestPersonID"]').change(function () {
             var partnerId = $(this).val();
 
-            // Gửi yêu cầu AJAX đến hành động GetProjects
             $.getJSON('/Requests/GetProjects', { partnerId: partnerId }, function (data) {
                 var projectDropdown = $('#Project');
                 projectDropdown.empty();
 
-                // Duyệt qua danh sách tên dự án trả về
                 $.each(data, function (index, projectName) {
-                    // Thêm mỗi tên dự án vào dropdown của projects
                     projectDropdown.append('<option value="' + projectName + '">' + projectName + '</option>');
                 });
             });

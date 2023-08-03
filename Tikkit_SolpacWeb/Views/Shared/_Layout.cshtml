@@ -27,6 +27,12 @@
                     <button class="btn btn-secondary dropdown-toggle text-black margin-right" type="button" id="notificationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="bi bi-bell-fill"></i>
                     </button>
+                    @if (ViewBag.UnreadNotificationCount > 0)
+                    {
+                        <span class="icon-button__badge">
+                            @ViewBag.UnreadNotificationCount
+                        </span>
+                    }
                     <div class="dropdown-menu text-black" aria-labelledby="notificationDropdown">
                         @{
                             int order = 1;
@@ -35,10 +41,10 @@
                         {
                             foreach (var notification in (IEnumerable<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications)
                             {
-                                <a class="dropdown-item" href="@Url.Action("Index", "Requests", new { id = notification.RequestID })">
-                                    @order.@notification.Title
-                                </a>
-                                order++;
+                                <a class="dropdown-item" data-notification-id="@notification.Id" href="@Url.Action("Index", "Requests", new { id = notification.RequestID })">
+    @order.@notification.Title
+</a>
+order++;
                             }
                         }
                         else
@@ -106,3 +112,26 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.dropdown-item').click(function (event) {
+            var notificationId = $(this).data('notification-id');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("MarkNotificationAsRead", "Requests")',
+                data: { Id: notificationId },
+                success: function (response) {
+                    // Xử lý khi yêu cầu thành công
+                },
+                error: function (error) {
+                    // Xử lý khi có lỗi xảy ra
+                }
+            });
+        });
+    });
+</script>
