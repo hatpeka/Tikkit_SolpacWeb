@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -89,20 +90,24 @@ namespace Tikkit_SolpacWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrEmpty(email) || !new EmailAddressAttribute().IsValid(email))
             {
-                var user = _context.Users
-                    .FirstOrDefault(u => u.Email == email);
-                if (user == null)
-                {
-                    // Don't reveal that the user does not exist
-                    return View("ForgotPasswordConfirmation");
-                }
-
-                string emailSubject = $"Mật khẩu ứng dụng";
-                string emailMessage = $"Chào {user.Name}, mật khẩu của bạn là {user.Password}";
-                await _emailSender.SendEmailAsync(email, emailSubject, emailMessage);
+                ModelState.AddModelError("Email", "Email không hợp lệ");
+                return View();
             }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "Không tìm thấy người dùng với email này");
+                return View();
+            }
+
+            string emailSubject = $"Mật khẩu ứng dụng";
+            string emailMessage = $"Chào {user.Name}, mật khẩu của bạn là {user.Password}";
+            await _emailSender.SendEmailAsync(email, emailSubject, emailMessage);
 
             return RedirectToAction("Login");
         }

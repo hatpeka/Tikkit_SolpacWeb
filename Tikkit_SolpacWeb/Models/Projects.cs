@@ -13,3 +13,4 @@ namespace Tikkit_SolpacWeb.Models
         public virtual Partners? Partners { get; set; }
     }
 }
+    
