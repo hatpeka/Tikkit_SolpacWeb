@@ -52,5 +52,6 @@ namespace Tikkit_SolpacWeb.Models
         public string? SupportContent { get; set; }
         public string? Contact { get; set; }
         public string? Status { get; set; } = "Đang chờ";
+        public string? CancelReason { get; set; }
     }
 }

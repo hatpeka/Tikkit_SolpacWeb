@@ -347,7 +347,7 @@ namespace Tikkit_SolpacWeb.Controllers
             // Verify the current password
             if (users.CurrentPassword != currentUser.Password)
             {
-                ModelState.AddModelError("CurrentPassword", "The current password is incorrect.");
+                ModelState.AddModelError("CurrentPassword", "Mật khẩu hiện tại không chính xác.");
                 return View(users);
             }
             if (users.NewPassword != users.ConfirmPassword)

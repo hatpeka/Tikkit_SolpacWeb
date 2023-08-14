@@ -20,6 +20,7 @@ using Tikkit_SolpacWeb.Hubs;
 using Microsoft.AspNetCore.Identity;
 using System.Collections;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -54,7 +55,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 requests = requests.Where(r => r.RequestNo == id.Value);
             }
             requests = requests.Where(r =>
-                (userRole != "Staff" || (r.Status == "Đang chờ" || r.Supporter == userName)) &&
+                (userRole != "Staff" || (r.Status == "Đang chờ" || r.Status == "Đã hủy" || r.Supporter == userName)) &&
                 (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
@@ -256,7 +257,7 @@ namespace Tikkit_SolpacWeb.Controllers
                     .Select(u => u.Email)
                     .ToList();
 
-                string emailSubject = $"New request: {requests.SubjectOfRequest}";
+                string emailSubject = $"New request: {requests.SubjectOfRequest} from {requests.Project} project";
                 string emailMessage = $"Client {requests.RequestPerson} has created a new request with the following details:\n\n{requests.ContentsOfRequest}";
                 foreach (string staffEmail in staffEmails)
                 {
@@ -485,10 +486,10 @@ namespace Tikkit_SolpacWeb.Controllers
 
                     return RedirectToAction(nameof(Index));
                 }
-                else if(existingRequest.Status == "Đang xử lý")
+                else if (existingRequest.Status == "Đang xử lý")
                 {
                     existingRequest.Status = "Đã hoàn thành";
-                    existingRequest.EndDate = DateTime.Now; 
+                    existingRequest.EndDate = DateTime.Now;
                     existingRequest.Reason = request.Reason;
                     existingRequest.SupportContent = request.SupportContent;
 
@@ -536,6 +537,100 @@ namespace Tikkit_SolpacWeb.Controllers
 
             return View(request);
         }
+
+        public async Task<IActionResult> CancelRequest(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var request = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            var model = new CancelRequestViewModel
+            {
+                RequestNo = request.RequestNo,
+                CancelReason = request.CancelReason
+            };
+
+            return PartialView("_CancelRequestPartial", model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelRequest(int id,[Bind("RequestNo, CancelReason")] CancelRequestViewModel model)
+        {
+            if (id != model.RequestNo)
+            {
+                return NotFound();
+            }
+
+            var existingRequest = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
+            if (existingRequest == null)
+            {
+                return NotFound();
+            }
+
+            if (existingRequest.Status == "Đang chờ" || existingRequest.Status == "Đang xử lý")
+            {
+                existingRequest.Status = "Đã hủy";
+                existingRequest.Status = "Đã hủy";
+                existingRequest.EndDate = DateTime.Now;
+                existingRequest.CancelReason = model.CancelReason;
+                try
+                {
+                    // Get all staff users
+                    var staffUsers = _context.Users.Where(u => u.Role == "Staff").ToList();
+
+                    // Send email to each staff user
+                    foreach (var staffUser in staffUsers)
+                    {
+                        string subject = $"Request cancelled: {existingRequest.SubjectOfRequest} from {existingRequest.Project} project";
+                        string message = $"Client {existingRequest.RequestPerson} has cancelled a request with the following details:\n\n{existingRequest.ContentsOfRequest}";
+                        await _emailSender.SendEmailAsync(staffUser.Email, subject, message);
+                    }
+
+                    // Create notification for each staff user
+                    foreach (var staffUser in staffUsers)
+                    {
+                        var notification = new Notification
+                        {
+                            Target = staffUser.ID,
+                            CreateTime = DateTime.Now,
+                            Title = $"Client {existingRequest.RequestPerson} has cancelled a request.",
+                            RequestID = existingRequest.RequestNo
+                        };
+                        _context.Add(notification);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    _context.Update(existingRequest);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!RequestsExists(existingRequest.RequestNo))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return PartialView(model);
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> ExportToExcel(string search, DateTime? fromDate, DateTime? toDate, string partner, string priority, string createPerson, string project, string status, string supporter)

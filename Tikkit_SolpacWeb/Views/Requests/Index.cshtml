@@ -66,6 +66,9 @@
             <div class="d-flex align-items-center mb-2">
                 <span class="color-box" style="background-color: #B5DDD1;">&nbsp;</span> Đã hoàn thành
             </div>
+            <div class="d-flex align-items-center mb-2">
+                <span class="color-box" style="background-color: #d4d4cb;">&nbsp;</span> Đã hủy
+            </div>
         </div>
         <div class="col-12 text-center">
             <button class="btn btn-outline-success my-2 my-sm-0 mx-2" type="submit">Tìm kiếm</button>
@@ -160,6 +163,9 @@
                 case "Đã hoàn thành":
                     backgroundColor = "#B5DDD1";
                     break;
+                case "Đã hủy":
+                    backgroundColor = "#d4d4cb";
+                    break;
             }
             <tr style="background-color: @backgroundColor">
                 <td>
@@ -251,6 +257,12 @@
                 {
                     <td>
                         <a asp-action="EditforStaff" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Edit"><i class="bi bi-pencil-square"></i></a>
+                    </td>
+                }
+                @if (ViewBag.UserRole == "Client" && @request.Status != "Đã hủy" && @request.Status != "Đã hoàn thành")
+                {
+                    <td>
+                        <a asp-action="CancelRequest" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Cancel"><i class="bi bi-x-circle"></i></a>
                     </td>
                 }
             </tr>
