@@ -205,7 +205,7 @@ namespace Tikkit_SolpacWeb.Controllers
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority")] RequestsCreateViewModel requestsCVm, IFormFile? ImagePath)
+        public async Task<IActionResult> Create([Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPersonID,SubjectOfRequest,ContentsOfRequest,ImagePath,Priority")] RequestsCreateViewModel requestsCVm, IFormFile? WordPath)
         {
             string userRole = HttpContext.Session.GetString("UserRole");
             ViewBag.UserRole = userRole;
@@ -216,16 +216,16 @@ namespace Tikkit_SolpacWeb.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             ViewBag.UserID = userId;
 
-            if (ImagePath != null && ImagePath.Length > 0)
+            if (WordPath != null && WordPath.Length > 0)
             {
                 string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
-                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ImagePath.FileName);
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(WordPath.FileName);
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await ImagePath.CopyToAsync(fileStream);
+                    await WordPath.CopyToAsync(fileStream);
                 }
-                requestsCVm.ImagePath = "/uploads/" + uniqueFileName;
+                requestsCVm.WordPath = "/uploads/" + uniqueFileName;
             }
 
             ModelState.Remove("Contact");
@@ -241,7 +241,7 @@ namespace Tikkit_SolpacWeb.Controllers
                     SubjectOfRequest = requestsCVm.SubjectOfRequest,
                     ContentsOfRequest = requestsCVm.ContentsOfRequest,
                     Priority = requestsCVm.Priority,
-                    ImagePath = requestsCVm.ImagePath
+                    WordPath = requestsCVm.WordPath
                 };
 
                 requests.CreatePerson = HttpContext.Session.GetString("UserName");
@@ -859,7 +859,7 @@ namespace Tikkit_SolpacWeb.Controllers
                                 Project = worksheet.Cells[row, 14].Value.ToString(),
                                 SubjectOfRequest = worksheet.Cells[row, 15].Value.ToString(),
                                 ContentsOfRequest = worksheet.Cells[row, 16].Value.ToString(),
-                                ImagePath = "",
+                                WordPath = "",
                                 Reason = worksheet.Cells[row, 18]?.Value?.ToString(),
                                 SupportContent = worksheet.Cells[row, 19]?.Value?.ToString(),
                                 Contact = worksheet.Cells[row, 21]?.Value?.ToString(),

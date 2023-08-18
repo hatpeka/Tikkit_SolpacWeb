@@ -129,7 +129,7 @@
             <th>Nội dung yêu cầu</th>
             @if (ViewBag.UserRole == "Staff")
             {
-                <th>Hình ảnh</th>
+                <th>Chi tiết</th>
                 <th>Nguyên nhân</th>
             }
             <th>Nội dung hỗ trợ</th>
@@ -202,13 +202,13 @@
                 @if (ViewBag.UserRole == "Staff")
                 {
                     <td>
-                        @if (!string.IsNullOrEmpty(request.ImagePath))
+                        @if (!string.IsNullOrEmpty(request.WordPath))
                         {
-                            <img src="@request.ImagePath" alt="Uploaded image" style="max-width: 100%; height:auto; cursor: pointer;" class="index-thumbnail" data-toggle="modal" data-target="#indexImageModal" data-imagepath="@request.ImagePath" />
+                            <a href="@request.WordPath" target="_blank"><i class="bi bi-file-word-fill"></i></a>
                         }
                         else
                         {
-                            <p>Không có hình ảnh</p>
+                            <p></p>
                         }
                     </td>
                     <td>@request.Reason</td>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tikkit_SolpacWeb.Data;
 
@@ -11,9 +12,10 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    partial class Tikkit_SolpacWebContextModelSnapshot : ModelSnapshot
+    [Migration("20230818024941_word")]
+    partial class word
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

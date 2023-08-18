@@ -14,6 +14,6 @@ namespace Tikkit_SolpacWeb.Models
         public string? SubjectOfRequest { get; set; }
         [Required(ErrorMessage = "Nội dung là bắt buộc.")]
         public string? ContentsOfRequest { get; set; }
-        public string? ImagePath { get; set; }
+        public string? WordPath { get; set; }
     }
 }

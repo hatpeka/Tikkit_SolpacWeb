@@ -23,16 +23,17 @@
                 <dt>Nội dung yêu cầu</dt>
                 <dd>@Html.DisplayFor(model => model.ContentsOfRequest)</dd>
 
-                <dt>Hình ảnh</dt>
+                <dt>Chi tiết</dt>
                 <dd>
-                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    @if (!string.IsNullOrEmpty(Model.WordPath))
                     {
-                        <img src="@Model.ImagePath" alt="Uploaded image" style="max-width: 100%; height:auto; cursor: pointer;" class="thumbnail" data-imagepath="@Model.ImagePath" />
+                        <a href="@Model.WordPath" target="_blank"><i class="bi bi-file-word-fill"></i></a>
                     }
                     else
                     {
-                        <p>Không có hình ảnh</p>
+                        <p>Không có chi tiết</p>
                     }
+                </dd>
             </dl>
         </div>
         <div class="col-md-6">

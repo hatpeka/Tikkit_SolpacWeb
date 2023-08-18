@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tikkit_SolpacWeb.Data;
 
@@ -11,9 +12,10 @@ using Tikkit_SolpacWeb.Data;
 namespace Tikkit_SolpacWeb.Migrations
 {
     [DbContext(typeof(Tikkit_SolpacWebContext))]
-    partial class Tikkit_SolpacWebContextModelSnapshot : ModelSnapshot
+    [Migration("20230816064741_reb")]
+    partial class reb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,6 +118,9 @@ namespace Tikkit_SolpacWeb.Migrations
                     b.Property<DateTime?>("ExpectedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Partner")
                         .HasColumnType("nvarchar(max)");
 
@@ -150,9 +155,6 @@ namespace Tikkit_SolpacWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Supporter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WordPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RequestNo");
