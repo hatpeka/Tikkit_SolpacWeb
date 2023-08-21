@@ -215,11 +215,27 @@
                 }
                 <td>@request.SupportContent</td>
                 <td>@request.TotalTime</td>
-                @if (ViewBag.UserRole != "Staff")
+                @if (ViewBag.UserRole == "Client")
                 {
                     <td>@request.Supporter</td>
                 }
+                @if (ViewBag.UserRole == "Admin")
+                {
+                    @if(request.Supporter == null)
+                    {
+                        <td>
+                            <a asp-action="SetSupporter" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Set Supporter">Chỉ định</a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @request.Supporter
+                        </td>
+                    }
+                }
                 <td>
+
                     @if (@request.Status != "Đã hoàn thành")
                     {
                         @if (ViewBag.UserRole == "Staff")

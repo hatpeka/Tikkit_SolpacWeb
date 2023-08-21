@@ -264,7 +264,6 @@ namespace Tikkit_SolpacWeb.Controllers
                     await _emailSender.SendEmailAsync(staffEmail, emailSubject, emailMessage);
                 }
 
-                string notificationMessage = $"Client {requests.RequestPerson} has created a new request.";
 
                 var staffUsers = _context.Users
                     .Where(u => u.Role == "Staff")
@@ -275,7 +274,7 @@ namespace Tikkit_SolpacWeb.Controllers
                     {
                         Target = staffUser.ID,
                         CreateTime = DateTime.Now,
-                        Title = $"Client {requests.RequestPerson} has a new request.",
+                        Title = $"{requests.RequestPerson} đã tạo yêu cầu mới.",
                         RequestID = requests.RequestNo
                     };
                     _context.Add(notification);
@@ -408,10 +407,6 @@ namespace Tikkit_SolpacWeb.Controllers
                 return NotFound();
             }
 
-            if (_context.Requests == null)
-            {
-                return Problem("Entity set 'Tikkit_SolpacWebContext.Requests'  is null.");
-            }
 
             var existingRequest = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
             if (existingRequest == null)
@@ -463,7 +458,7 @@ namespace Tikkit_SolpacWeb.Controllers
                         {
                             Target = existingRequest.RequestPersonID, // this should be the client's user ID
                             CreateTime = DateTime.Now,
-                            Title = $"Your request has been received by staff {existingRequest.Supporter}.",
+                            Title = $"Yêu cầu đã được tiếp nhận bởi {existingRequest.Supporter}.",
                             RequestID = existingRequest.RequestNo,
                         };
                         _context.Add(notification);
@@ -511,7 +506,7 @@ namespace Tikkit_SolpacWeb.Controllers
                         {
                             Target = existingRequest.RequestPersonID,
                             CreateTime = DateTime.Now,
-                            Title = $"Your request has been done by staff {existingRequest.Supporter}.",
+                            Title = $"Yêu cầu đã được xử lý bởi {existingRequest.Supporter}.",
                             RequestID = existingRequest.RequestNo,
                         };
                         _context.Add(notification);
@@ -537,6 +532,86 @@ namespace Tikkit_SolpacWeb.Controllers
 
             return View(request);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SetSupporter(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var request = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            var sp = _context.Users
+                .Where(s => s.Role == "Staff")
+                .ToList();
+
+            ViewBag.Supporters = sp;
+            return PartialView("_SetSupporterPartial", request);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetSupporter(int id, [Bind("RequestNo, SupporterID")] Requests request)
+        {
+            if (id != request.RequestNo)
+            {
+                return NotFound();
+            }
+
+            var existingRequest = await _context.Requests.FirstOrDefaultAsync(m => m.RequestNo == id);
+            if (existingRequest == null)
+            {
+                return NotFound();
+            }
+            existingRequest.SupporterID = request.SupporterID;
+            var supporter = await _context.Users.FirstOrDefaultAsync(u => u.ID == request.SupporterID);
+            if (supporter != null)
+            {
+                existingRequest.Supporter = supporter.Name;
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var notification = new Notification
+                    {
+                        Target = existingRequest.SupporterID, // this should be the client's user ID
+                        CreateTime = DateTime.Now,
+                        Title = $"Bạn được chỉ định xử lý yêu cầu.",
+                        RequestID = existingRequest.RequestNo,
+                    };
+                    _context.Add(notification);
+                    await _context.SaveChangesAsync();
+
+
+                    _context.Update(existingRequest);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!RequestsExists(existingRequest.RequestNo))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+
+            }
+            return View(request);
+        }
+
+
+
 
         public async Task<IActionResult> CancelRequest(int? id)
         {
@@ -602,7 +677,7 @@ namespace Tikkit_SolpacWeb.Controllers
                         {
                             Target = staffUser.ID,
                             CreateTime = DateTime.Now,
-                            Title = $"Client {existingRequest.RequestPerson} has cancelled a request.",
+                            Title = $"{existingRequest.RequestPerson} đã hủy yêu cầu.",
                             RequestID = existingRequest.RequestNo
                         };
                         _context.Add(notification);
@@ -709,11 +784,10 @@ namespace Tikkit_SolpacWeb.Controllers
                 worksheet.Cells[1, 14].Value = "Dự án";
                 worksheet.Cells[1, 15].Value = "Tiêu đề yêu cầu";
                 worksheet.Cells[1, 16].Value = "Nội dung yêu cầu";
-                worksheet.Cells[1, 17].Value = "Hình ảnh";
-                worksheet.Cells[1, 18].Value = "Nguyên nhân";
-                worksheet.Cells[1, 19].Value = "Nội dung hỗ trợ";
-                worksheet.Cells[1, 20].Value = "Tổng thời gian";
-                worksheet.Cells[1, 21].Value = "Liên hệ";
+                worksheet.Cells[1, 17].Value = "Nguyên nhân";
+                worksheet.Cells[1, 18].Value = "Nội dung hỗ trợ";
+                worksheet.Cells[1, 19].Value = "Tổng thời gian";
+                worksheet.Cells[1, 20].Value = "Liên hệ";
 
                 // Đổ dữ liệu vào bảng
                 for (int i = 0; i < requestsList.Count; i++)
@@ -735,11 +809,10 @@ namespace Tikkit_SolpacWeb.Controllers
                     worksheet.Cells[i + 2, 14].Value = request.Project;
                     worksheet.Cells[i + 2, 15].Value = request.SubjectOfRequest;
                     worksheet.Cells[i + 2, 16].Value = request.ContentsOfRequest;
-                    //worksheet.Cells[i + 2, 17].Value = request.Image;
-                    worksheet.Cells[i + 2, 18].Value = request.Reason;
-                    worksheet.Cells[i + 2, 19].Value = request.SupportContent;
-                    worksheet.Cells[i + 2, 20].Value = request.TotalTime;
-                    worksheet.Cells[i + 2, 21].Value = request.Contact;
+                    worksheet.Cells[i + 2, 17].Value = request.Reason;
+                    worksheet.Cells[i + 2, 18].Value = request.SupportContent;
+                    worksheet.Cells[i + 2, 19].Value = request.TotalTime;
+                    worksheet.Cells[i + 2, 20].Value = request.Contact;
                 }
 
                 // Ghi file Excel vào MemoryStream
@@ -862,7 +935,7 @@ namespace Tikkit_SolpacWeb.Controllers
                                 WordPath = "",
                                 Reason = worksheet.Cells[row, 18]?.Value?.ToString(),
                                 SupportContent = worksheet.Cells[row, 19]?.Value?.ToString(),
-                                Contact = worksheet.Cells[row, 21]?.Value?.ToString(),
+                                Contact = worksheet.Cells[row, 20]?.Value?.ToString(),
                             };
                             _context.Requests.Add(request);
                         };

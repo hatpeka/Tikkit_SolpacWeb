@@ -1,0 +1,29 @@
+﻿@model Tikkit_SolpacWeb.Models.Requests
+
+<form asp-action="SetSupporter">
+    <input type="hidden" asp-for="RequestNo" />
+
+    <div class="form-group">
+        <label asp-for="SupporterID" class="control-label">Người hỗ trợ</label>
+        <select asp-for="SupporterID" class="form-control">
+            <option value="">Chọn người hỗ trợ</option>
+            @foreach (var user in ViewBag.Supporters)
+            {
+                <option value="@user.ID">@user.Name</option>
+            }
+        </select>
+        <span asp-validation-for="SupporterID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Chỉ định" class="btn btn-primary" />
+    </div>
+</form>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
