@@ -55,8 +55,8 @@ namespace Tikkit_SolpacWeb.Controllers
                 requests = requests.Where(r => r.RequestNo == id.Value);
             }
             requests = requests.Where(r =>
-                (userRole != "Staff" || (r.Status == "Đang chờ" || r.Status == "Đã hủy" || r.Supporter == userName)) &&
-                (userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
+                (userRole == "Admin" || (userRole != "Staff" || (r.Status == "Đang chờ" || r.Status == "Đã hủy" || r.Supporter == userName))) &&
+                (userRole == "Admin" || userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
                 (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
                 (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
@@ -932,7 +932,6 @@ namespace Tikkit_SolpacWeb.Controllers
                                 Project = worksheet.Cells[row, 14].Value.ToString(),
                                 SubjectOfRequest = worksheet.Cells[row, 15].Value.ToString(),
                                 ContentsOfRequest = worksheet.Cells[row, 16].Value.ToString(),
-                                WordPath = "",
                                 Reason = worksheet.Cells[row, 18]?.Value?.ToString(),
                                 SupportContent = worksheet.Cells[row, 19]?.Value?.ToString(),
                                 Contact = worksheet.Cells[row, 20]?.Value?.ToString(),

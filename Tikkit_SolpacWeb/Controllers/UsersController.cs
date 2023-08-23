@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Tikkit_SolpacWeb.Data;
+using Tikkit_SolpacWeb.Migrations;
 using Tikkit_SolpacWeb.Models;
 using Tikkit_SolpacWeb.Services.Email;
 
@@ -76,7 +79,7 @@ namespace Tikkit_SolpacWeb.Controllers
 
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 return RedirectToAction("Index", "Requests");
-                
+
             }
             return RedirectToAction("Login");
         }
@@ -299,7 +302,7 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 _context.Users.Remove(users);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -313,7 +316,7 @@ namespace Tikkit_SolpacWeb.Controllers
 
         private bool UsersExists(int id)
         {
-          return (_context.Users?.Any(e => e.ID == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.ID == id)).GetValueOrDefault();
         }
 
         // GET: Users/ChangePassword
@@ -460,9 +463,7 @@ namespace Tikkit_SolpacWeb.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
-
             return RedirectToAction("Index");
         }
-
     }
 }

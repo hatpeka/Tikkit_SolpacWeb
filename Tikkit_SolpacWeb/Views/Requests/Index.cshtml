@@ -240,7 +240,14 @@
                     {
                         @if (ViewBag.UserRole == "Staff")
                         {
-                            <a asp-action="StaffResponse" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Response">@request.Status</a>
+                            @if (@request.Status == "Đã hủy")
+                            {
+                                @request.Status
+                            }
+                            else
+                            {
+                                <a asp-action="StaffResponse" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Response">@request.Status</a>
+                            }
                         }
                         else
                         {
