@@ -130,4 +130,6 @@ boydy{
     align-items: center;
 }
 
-
+.bg-info {
+    background-color : #d35e5e;
+}
