@@ -104,6 +104,12 @@ namespace Tikkit_SolpacWeb.Controllers
 
             var userId = HttpContext.Session.GetInt32("UserId");
 
+            //DateTime currentTime = DateTime.Now;
+            //var requestDue = _context.Requests.
+            //    Where(r => r.DeadlineDate.AddHours(-3) <= currentTime)
+            //    .ToList();
+
+
             var unreadNotificationCount = _context.Notification.Count(n => !n.IsRead && n.Target == userId);
             ViewBag.UnreadNotificationCount = unreadNotificationCount;
             var notifications = _context.Notification
@@ -485,7 +491,6 @@ namespace Tikkit_SolpacWeb.Controllers
                 {
                     existingRequest.Status = "Đã hoàn thành";
                     existingRequest.EndDate = DateTime.Now;
-                    existingRequest.Reason = request.Reason;
                     existingRequest.SupportContent = request.SupportContent;
 
 

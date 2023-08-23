@@ -21,6 +21,7 @@ namespace Tikkit_SolpacWeb.Models
                 }
                 return RequestDate.AddDays(1);
             }
+            set { }
         }
         public DateTime? StartDate { get; set; }
         public DateTime? ExpectedDate { get; set; }

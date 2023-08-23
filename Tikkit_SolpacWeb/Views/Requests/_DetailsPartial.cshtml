@@ -55,6 +55,11 @@
 
                 <dt>Nội dung hỗ trợ</dt>
                 <dd>@Html.DisplayFor(model => model.SupportContent)</dd>
+                @if(Model.Status == "Đã hủy")
+                {
+                    <dt>Lý do hủy</dt>
+                    <dd>@Html.DisplayFor(model => model.CancelReason)</dd>
+                }
             </dl>
         </div>
     </div>

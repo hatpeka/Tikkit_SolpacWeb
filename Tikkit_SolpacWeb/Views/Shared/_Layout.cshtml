@@ -37,6 +37,10 @@
                         @{
                             int order = 1;
                         }
+@*                        <a class="dropdown-item" href="@Url.Action("Index", "Requests", new { id = "due" })">
+                            Các thông báo đến hạn
+                        </a>*@
+
                         @if (ViewBag.Notifications != null && ((List<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications).Any())
                         {
                             foreach (var notification in (IEnumerable<Tikkit_SolpacWeb.Models.Notification>)ViewBag.Notifications)
