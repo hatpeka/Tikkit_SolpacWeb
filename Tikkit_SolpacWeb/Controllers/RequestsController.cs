@@ -49,7 +49,7 @@ namespace Tikkit_SolpacWeb.Controllers
             string userName = HttpContext.Session.GetString("UserName");
             var requests = _context.Requests.AsQueryable();
             ViewBag.UserRole = userRole;
-
+            ViewBag.UserName = userName;
             if (id.HasValue)
             {
                 requests = requests.Where(r => r.RequestNo == id.Value);

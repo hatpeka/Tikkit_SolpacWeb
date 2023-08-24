@@ -246,7 +246,14 @@
                             }
                             else
                             {
-                                <a asp-action="StaffResponse" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Response">@request.Status</a>
+                                @if(@request.Supporter == ViewBag.UserName)
+                                {
+                                    <a asp-action="StaffResponse" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Response">@request.Status</a>
+                                }
+                                else
+                                {
+                                    @request.Status
+                                }
                             }
                         }
                         else
