@@ -1,7 +1,7 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Tikkit_SolpacWeb.Models.Users
+
 @{
+    ViewData["Title"] = "Login";
 }
 
 <!DOCTYPE html>
@@ -67,9 +67,11 @@
     <form method="post" asp-controller="Users" asp-action="Login">
         <label for="email">Email</label>
         <input type="text" id="email" name="email">
+        <span asp-validation-for="Email" class="text-danger"></span>
 
         <label for="password">Mật khẩu</label>
         <input type="password" id="password" name="password">
+        <span asp-validation-for="Password" class="text-danger"></span>
 
         <input type="submit" value="Đăng nhập" class="btn-login">
         <a href="@Url.Action("ForgotPassword", "Users")">Quên mật khẩu?</a>

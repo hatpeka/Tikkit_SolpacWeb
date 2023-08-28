@@ -56,6 +56,7 @@ namespace Tikkit_SolpacWeb.Controllers
 
             string userRole = HttpContext.Session.GetString("UserRole");
             string userName = HttpContext.Session.GetString("UserName");
+            string userPartner = HttpContext.Session.GetString("Partner");
             var requests = _context.Requests.AsQueryable();
             ViewBag.UserRole = userRole;
             ViewBag.UserName = userName;
@@ -88,7 +89,10 @@ namespace Tikkit_SolpacWeb.Controllers
             requests = requests.Where(r =>
                 (userRole == "Admin" || (userRole != "Staff" || (r.Status == "Đang chờ" || r.Status == "Đã hủy" || r.Supporter == userName))) &&
                 (userRole == "Admin" || userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
-                (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
+                (
+                    (string.IsNullOrEmpty(partner) || r.Partner.Contains(partner)) &&
+                    (userRole != "Client" || (userRole == "Client" && r.Partner == userPartner))
+                ) &&
                 (string.IsNullOrEmpty(priority) || r.Priority.Contains(priority)) &&
                 (string.IsNullOrEmpty(createPerson) || r.CreatePerson.Contains(createPerson)) &&
                 (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&

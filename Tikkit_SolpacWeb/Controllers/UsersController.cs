@@ -81,6 +81,21 @@ namespace Tikkit_SolpacWeb.Controllers
                 return RedirectToAction("Index", "Requests");
 
             }
+            if (User == null)
+            {
+                ModelState.AddModelError("Email", "Email không chính xác");
+                return View("Login");
+            }
+            if (User != null && User.Password != password)
+            {
+                ModelState.AddModelError("Password", "Mật khẩu không chính xác");
+                return View("Login");
+            }
+            if (User != null && User.Password == password && User.Status == "Stopped")
+            {
+                ModelState.AddModelError("Password", "Tài khoản đang bị khóa");
+                return View("Login");
+            }
             return RedirectToAction("Login");
         }
 
@@ -363,20 +378,7 @@ namespace Tikkit_SolpacWeb.Controllers
             await _context.SaveChangesAsync();
 
             // Redirect to the main page of the role after saving changes.
-            if (currentUser.Role == "Admin")
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            else if (currentUser.Role == "Staff")
-            {
-                return RedirectToAction("Staff", "Home");
-            }
-            else if (currentUser.Role == "Client")
-            {
-                return RedirectToAction("Client", "Home");
-            }
-
-            return View(users);
+            return RedirectToAction("Index", "Requests");
         }
 
         [HttpGet]
