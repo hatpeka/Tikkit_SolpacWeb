@@ -246,7 +246,7 @@
                             }
                             else
                             {
-                                @if(@request.Supporter == ViewBag.UserName)
+                                @if(@request.Supporter == ViewBag.UserName || @request.Supporter == null)
                                 {
                                     <a asp-action="StaffResponse" asp-route-id="@request.RequestNo" data-toggle="modal" data-target="#myModal" data-title="Response">@request.Status</a>
                                 }
@@ -260,7 +260,7 @@
                         {
                             @request.Status
                         }
-                    }
+                    }   
                     else
                     {
                         @request.Status

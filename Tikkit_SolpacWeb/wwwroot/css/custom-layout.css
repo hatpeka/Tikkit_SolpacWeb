@@ -130,6 +130,22 @@ boydy{
     align-items: center;
 }
 
+.icon-due__badge {
+    position: absolute;
+    top: 15px;
+    right: 36px;
+    width: 15px;
+    height: 15px;
+    background: red;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 10px;
+    align-items: center;
+}
+
 .bg-info {
     background-color: burlywood;
 }

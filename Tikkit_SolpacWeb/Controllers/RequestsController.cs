@@ -45,13 +45,44 @@ namespace Tikkit_SolpacWeb.Controllers
             int currentMonth = DateTime.Now.Month;
             int currentYear = DateTime.Now.Year;
 
+            DateTime currentTime = DateTime.Now;
+            var requestDue = _context.Requests.
+                Where(r => r.DeadlineDate.AddHours(-3) <= currentTime && r.Status != "Đã hoàn thành" && r.Status != "Đã hủy")
+                .ToList();
+
+            ViewBag.RequestDue = requestDue;
+            ViewBag.RequestDueCount = requestDue.Count;
+
+
             string userRole = HttpContext.Session.GetString("UserRole");
             string userName = HttpContext.Session.GetString("UserName");
             var requests = _context.Requests.AsQueryable();
             ViewBag.UserRole = userRole;
             ViewBag.UserName = userName;
+
+            requests = requests.Skip(pageNo * pageSize).Take(pageSize);
+
+            ViewBag.PageNo = pageNo;
+            ViewBag.PageSize = pageSize;
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            var unreadNotificationCount = _context.Notification.Count(n => !n.IsRead && n.Target == userId);
+            ViewBag.UnreadNotificationCount = unreadNotificationCount;
+            var notifications = _context.Notification
+                .Where(n => n.Target == userId)
+                .OrderByDescending(n => n.CreateTime)
+                .ToList();
+            ViewBag.Notifications = notifications;
+
             if (id.HasValue)
             {
+                if (id == 0)
+                {
+                    var rq = ViewBag.RequestDue as List<Requests>;
+
+                    return View(rq);
+                }
                 requests = requests.Where(r => r.RequestNo == id.Value);
             }
             requests = requests.Where(r =>
@@ -97,26 +128,7 @@ namespace Tikkit_SolpacWeb.Controllers
                     requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
                 }
             }
-            requests = requests.Skip(pageNo * pageSize).Take(pageSize);
 
-            ViewBag.PageNo = pageNo;
-            ViewBag.PageSize = pageSize;
-
-            var userId = HttpContext.Session.GetInt32("UserId");
-
-            //DateTime currentTime = DateTime.Now;
-            //var requestDue = _context.Requests.
-            //    Where(r => r.DeadlineDate.AddHours(-3) <= currentTime)
-            //    .ToList();
-
-
-            var unreadNotificationCount = _context.Notification.Count(n => !n.IsRead && n.Target == userId);
-            ViewBag.UnreadNotificationCount = unreadNotificationCount;
-            var notifications = _context.Notification
-                .Where(n => n.Target == userId)
-                .OrderByDescending(n => n.CreateTime)
-                .ToList();
-            ViewBag.Notifications = notifications;
             return View(await requests.ToListAsync());
         }
 
