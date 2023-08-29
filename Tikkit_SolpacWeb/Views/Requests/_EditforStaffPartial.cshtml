@@ -10,26 +10,23 @@
             <div class="col">
                 <div class="form-group">
                     <label asp-for="RequestDate" class="control-label">Ngày yêu cầu</label>
-                    <input asp-for="RequestDate" class="form-control" />
+                    <input asp-for="RequestDate" class="form-control" readonly/>
                     <span asp-validation-for="RequestDate" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="StartDate" class="control-label">Ngày bắt đầu</label>
-                    <input asp-for="StartDate" class="form-control" />
+                    <input asp-for="StartDate" class="form-control" readonly/>
                     <span asp-validation-for="StartDate" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="EndDate" class="control-label">Ngày kết thúc</label>
-                    <input asp-for="EndDate" class="form-control" />
+                    <input asp-for="EndDate" class="form-control" readonly/>
                     <span asp-validation-for="EndDate" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Priority" class="control-label">Mức ưu tiên</label>
-                    <select asp-for="Priority" class="form-control">
-                        <option value="Normal">Thông thường</option>
-                        <option value="Urgent">Khẩn cấp</option>
-                    </select>
-                    <span asp-validation-for="Priority" class="text-danger"></span>
+                    <label asp-for="TotalTime" class="control-label">Thời gian đã hỗ trợ</label>
+                    <input asp-for="TotalTime" class="form-control"/>
+                    <span asp-validation-for="TotalTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="RequestPerson" class="control-label">Người yêu cầu</label>
@@ -43,8 +40,13 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Supporter" class="control-label">Người hỗ trợ</label>
-                    <input asp-for="Supporter" class="form-control"/>
+                    <input asp-for="Supporter" class="form-control" readonly/>
                     <span asp-validation-for="Supporter" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Contact" class="control-label">Liên hệ</label>
+                    <input asp-for="Contact" class="form-control" readonly />
+                    <span asp-validation-for="Contact" class="text-danger"></span>
                 </div>
                 
 
@@ -95,5 +97,9 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
+
+
 
 

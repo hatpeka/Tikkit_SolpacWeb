@@ -26,19 +26,7 @@ namespace Tikkit_SolpacWeb.Models
         public DateTime? StartDate { get; set; }
         public DateTime? ExpectedDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public string TotalTime
-        {
-            get
-            {
-                if (StartDate.HasValue && EndDate.HasValue)
-                {
-                    TimeSpan totalTime = EndDate.Value - StartDate.Value;
-                    return $"{totalTime.Hours}h:{totalTime.Minutes}m:{totalTime.Seconds}s";
-                }
-
-                return "0h:0m:0s";
-            }
-        }
+        public TimeSpan? TotalTime { get; set; } = TimeSpan.Zero;
         public string? Priority { get; set; }
         public string? RequestPerson { get; set; }
         public int? RequestPersonID { get; set; }

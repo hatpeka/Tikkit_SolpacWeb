@@ -204,7 +204,9 @@ namespace Tikkit_SolpacWeb.Controllers
                 ViewBag.Projects = projects;
             }
 
-            var users = _context.Users.ToList();
+            var users = _context.Users
+                .Where(u => u.Role == "Client")
+                .ToList();
             ViewBag.Users = users;
 
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -333,7 +335,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
+        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,TotalTime,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
         {
             if (id != requests.RequestNo)
             {
@@ -422,7 +424,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // POST: Requests/Response/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StaffResponse(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent,RequestPersonID,Project,SubjectOfRequest,ContentsOfRequest,Contact")] Requests request)
+        public async Task<IActionResult> StaffResponse(int id, [Bind("RequestNo,StartDate,ExpectedDate,EndDate,Supporter,Reason,SupportContent,RequestPersonID,Project,SubjectOfRequest,ContentsOfRequest")] Requests request)
         {
             if (id != request.RequestNo)
             {
@@ -507,6 +509,7 @@ namespace Tikkit_SolpacWeb.Controllers
                 {
                     existingRequest.Status = "Đã hoàn thành";
                     existingRequest.EndDate = DateTime.Now;
+                    existingRequest.TotalTime = existingRequest.EndDate - existingRequest.StartDate;
                     existingRequest.SupportContent = request.SupportContent;
 
 
