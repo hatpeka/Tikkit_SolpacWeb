@@ -335,7 +335,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,TotalTime,Partner,Project,RequestPerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
+        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,TotalTime,Partner,Project,RequestPerson,CreatePerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
         {
             if (id != requests.RequestNo)
             {
