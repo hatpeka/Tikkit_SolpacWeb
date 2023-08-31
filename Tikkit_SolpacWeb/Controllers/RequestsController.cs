@@ -1048,8 +1048,9 @@ namespace Tikkit_SolpacWeb.Controllers
                                 Project = worksheet.Cells[row, 14].Value.ToString(),
                                 SubjectOfRequest = worksheet.Cells[row, 15].Value.ToString(),
                                 ContentsOfRequest = worksheet.Cells[row, 16].Value.ToString(),
-                                Reason = worksheet.Cells[row, 18]?.Value?.ToString(),
-                                SupportContent = worksheet.Cells[row, 19]?.Value?.ToString(),
+                                Reason = worksheet.Cells[row, 17]?.Value?.ToString(),
+                                SupportContent = worksheet.Cells[row, 18]?.Value?.ToString(),
+                                TotalTime = TimeSpan.Parse(worksheet.Cells[row, 19]?.Value?.ToString() ?? "00:00:00"),
                                 Contact = worksheet.Cells[row, 20]?.Value?.ToString(),
                             };
                             _context.Requests.Add(request);
