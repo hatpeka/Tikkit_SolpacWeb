@@ -53,6 +53,7 @@
                 <option value="Đã hoàn thành" selected="@(statusSelected == "Đã hoàn thành")">Đã hoàn thành</option>
                 <option value="Đang xử lý" selected="@(statusSelected == "Đang xử lý")">Đang xử lý</option>
                 <option value="Đang chờ" selected="@(statusSelected == "Đang chờ")">Đang chờ</option>
+                <option value="Đã hủy" selected="@(statusSelected == "Đã hủy")">Đã hủy</option>
             </select>
             <input class="form-control mb-2 short-input" type="text" name="supporter" placeholder="Người hỗ trợ" aria-label="Supporter" value="@Context.Request.Query["supporter"]">
         </div>
@@ -214,7 +215,7 @@
                     <td>@request.Reason</td>
                 }
                 <td>@request.SupportContent</td>
-                <td>@request.TotalTime</td>
+                <td>@string.Format("{0:D2}:{1:D2}:{2:D2}", request.TotalTime.Value.Hours, request.TotalTime.Value.Minutes, request.TotalTime.Value.Seconds)</td>
                 @if (ViewBag.UserRole == "Client")
                 {
                     <td>@request.Supporter</td>

@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Tikkit_SolpacWeb.Models.Requests>
+@using System.Text.RegularExpressions;
+
+@functions {
+    public static string ExtractPhoneNumber(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+
+        var regex = new Regex(@"\d+");
+        var match = regex.Match(input);
+
+        return match.Success ? match.Value : string.Empty;
+    }
+}
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container form-container">
+    <form method="get" class="row">
+        @{
+            var prioritySelected = Context.Request.Query["priority"];
+            var statusSelected = Context.Request.Query["status"];
+        }
+        <div class="col-3">
+            <!-- Column 1 -->
+            <input class="form-control mb-2 short-input" type="date" name="fromDate" placeholder="From Date" aria-label="From Date" value="@Context.Request.Query["fromDate"]">
+            <select class="form-control mb-2 short-input" name="priority">
+                <option value="" selected="@(string.IsNullOrEmpty(prioritySelected))">Mức ưu tiên</option>
+                <option value="Normal" selected="@(prioritySelected == "Normal")">Thông thường</option>
+                <option value="Urgent" selected="@(prioritySelected == "Urgent")">Khẩn cấp</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <!-- Column 2 -->
+            <input class="form-control mb-2 short-input" type="date" name="toDate" placeholder="To Date" aria-label="To Date" value="@Context.Request.Query["toDate"]">
+        </div>
+        <div class="col-3">
+            <!-- Column 3 -->
+            <select class="form-control mb-2 short-input" name="status">
+                <option value="" selected="@(string.IsNullOrEmpty(statusSelected))">Trạng thái</option>
+                <option value="Đã hoàn thành" selected="@(statusSelected == "Đã hoàn thành")">Đã hoàn thành</option>
+                <option value="Đang xử lý" selected="@(statusSelected == "Đang xử lý")">Đang xử lý</option>
+                <option value="Đang chờ" selected="@(statusSelected == "Đang chờ")">Đang chờ</option>
+                <option value="Đã hủy" selected="@(statusSelected == "Đã hủy")">Đã hủy</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <div class="d-flex align-items-center mb-2">
+                <span class="color-box" style="background-color: #FCD5B4;">&nbsp;</span> Đang chờ
+            </div>
+            <div class="d-flex align-items-center mb-2">
+                <span class="color-box" style="background-color: #F2CF59;">&nbsp;</span> Đang xử lý
+            </div>
+            <div class="d-flex align-items-center mb-2">
+                <span class="color-box" style="background-color: #B5DDD1;">&nbsp;</span> Đã hoàn thành
+            </div>
+            <div class="d-flex align-items-center mb-2">
+                <span class="color-box" style="background-color: #d4d4cb;">&nbsp;</span> Đã hủy
+            </div>
+        </div>
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-info mx-1" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
+            <button class="btn btn-outline-success my-2 my-sm-0 mx-2" type="submit">Tìm kiếm</button>
+            <a class="btn btn-outline-danger my-2 my-sm-0 mx-2" asp-action="Index" asp-controller="Requests">Hủy</a>
+        </div>
+    </form>
+</div>
+<br />
+<br />
+
+
+
+<table class="table bordered-table">
+    <thead>
+        <tr>
+            <th>Stt</th>
+            <th>Ngày yêu cầu</th>
+            <th>Ngày bắt đầu</th>
+            <th>Thời gian bắt đầu</th>
+            <th>Ngày dự kiến</th>
+            <th>Thời gian kết thúc</th>
+            <th>Ngày kết thúc</th>
+            <th>Công ty</th>
+            <th>Dự án</th>
+            <th>Người yêu cầu</th>
+            <th>Người tạo yêu cầu</th>
+            <th>Mức ưu tiên</th>
+            <th>Dự án</th>
+            <th>Tiêu đề</th>
+            <th>Nội dung yêu cầu</th>
+            <th>Nguyên nhân</th>
+            <th>Nội dung hỗ trợ</th>
+            <th>Thời gian đã hỗ trợ</th>
+            <th>Người hỗ trợ</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int order = 1;
+        }
+        @foreach (var request in Model.OrderByDescending(r => r.RequestDate).Where(r => string.IsNullOrEmpty(Context.Request.Query["search"]) || r.SubjectOfRequest.Contains(Context.Request.Query["search"].ToString()) || r.ContentsOfRequest.Contains(Context.Request.Query["search"].ToString())))
+        {
+            string backgroundColor = "";
+            switch (request.Status)
+            {
+                case "Đang chờ":
+                    backgroundColor = "#FCD5B4";
+                    break;
+                case "Đang xử lý":
+                    backgroundColor = "#F2CF59";
+                    break;
+                case "Đã hoàn thành":
+                    backgroundColor = "#B5DDD1";
+                    break;
+                case "Đã hủy":
+                    backgroundColor = "#d4d4cb";
+                    break;
+            }
+            <tr style="background-color: @backgroundColor">
+                <td>@order</td>
+                <td>@request.RequestDate.ToString("dd-MM")</td>
+                <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("dd-MM") : "")</td>
+                <td>@(request.StartDate.HasValue && request.StartDate.Value != DateTime.MinValue ? request.StartDate.Value.ToString("HH:mm") : "")</td>
+                <td>@(request.ExpectedDate.HasValue && request.ExpectedDate.Value != DateTime.MinValue ? request.ExpectedDate.Value.ToString("dd-MM") : "")</td>
+                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("HH:mm") : "")</td>
+                <td>@(request.EndDate.HasValue && request.EndDate.Value != DateTime.MinValue ? request.EndDate.Value.ToString("dd-MM") : "")</td>
+                <td>@request.Partner</td>
+                <td>@request.Project</td>
+                <td>@request.RequestPerson</td>
+                <td>@request.CreatePerson</td>
+                <td>@request.Priority</td>
+                <td>@request.Project</td>
+                <td>@request.SubjectOfRequest</td>
+                <td>@request.ContentsOfRequest</td>
+                <td>@request.Reason</td>
+                <td>@request.SupportContent</td>
+                <td>@string.Format("{0:D2}:{1:D2}:{2:D2}", request.TotalTime.Value.Hours, request.TotalTime.Value.Minutes, request.TotalTime.Value.Seconds)</td>
+                <td>@request.Supporter</td>
+                <td>@request.Status</td>
+                
+            </tr>
+            order++;
+        }
+    </tbody>
+</table>

@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using OfficeOpenXml.Style;
 
 namespace Tikkit_SolpacWeb.Controllers
 {
@@ -98,6 +99,64 @@ namespace Tikkit_SolpacWeb.Controllers
                 (string.IsNullOrEmpty(project) || r.Project.Contains(project)) &&
                 (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
                 (string.IsNullOrEmpty(supporter) || r.Supporter.Contains(supporter)) &&
+                (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
+            );
+
+            if (!fromDate.HasValue && !toDate.HasValue)
+            {
+                requests = requests.Where(r => r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear);
+            }
+            else
+            {
+                if (fromDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate >= fromDate.Value);
+                }
+                if (toDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+                }
+            }
+
+            if (!fromDate.HasValue && !toDate.HasValue)
+            {
+                requests = requests.Where(r => r.RequestDate.Month == currentMonth && r.RequestDate.Year == currentYear);
+            }
+            else
+            {
+                if (fromDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate >= fromDate.Value);
+                }
+                if (toDate.HasValue)
+                {
+                    requests = requests.Where(r => r.RequestDate <= toDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+                }
+            }
+
+            return View(await requests.ToListAsync());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportAsync(string search, DateTime? fromDate, DateTime? toDate, string status, string title)
+        {
+            int currentMonth = DateTime.Now.Month;
+            int currentYear = DateTime.Now.Year;
+
+            string userRole = HttpContext.Session.GetString("UserRole");
+            string userName = HttpContext.Session.GetString("UserName");
+            string userPartner = HttpContext.Session.GetString("Partner");
+
+            var requests = _context.Requests.AsQueryable();
+
+
+            requests = requests.Where(r =>
+                (userRole == "Admin" || (userRole != "Staff" || (r.Status == "Đang chờ" || r.Status == "Đã hủy" || r.Supporter == userName))) &&
+                (userRole == "Admin" || userRole == "Staff" || r.RequestPerson == userName || r.CreatePerson == userName) &&
+                (
+                    (userRole != "Client" || (userRole == "Client" && r.Partner == userPartner))
+                ) &&
+                (string.IsNullOrEmpty(status) || r.Status.Contains(status)) &&
                 (string.IsNullOrEmpty(search) || r.SubjectOfRequest.Contains(search) || r.ContentsOfRequest.Contains(search))
             );
 
@@ -335,7 +394,7 @@ namespace Tikkit_SolpacWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,TotalTime,Partner,Project,RequestPerson,CreatePerson,SubjectOfRequest,ContentsOfRequest,Priority,Contact")] Requests requests)
+        public async Task<IActionResult> EditforStaff(int id, [Bind("RequestNo,RequestDate,DeadlineDate,TotalTime,Partner,Project,RequestPerson,CreatePerson,SubjectOfRequest,ContentsOfRequest,Contact")] Requests requests)
         {
             if (id != requests.RequestNo)
             {
@@ -346,7 +405,27 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 try
                 {
-                    _context.Update(requests);
+                    // Get the existing request from the database
+                    var existingRequest = await _context.Requests.FirstOrDefaultAsync(r => r.RequestNo == id);
+
+                    if (existingRequest == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Update only the fields you want
+                    existingRequest.RequestDate = requests.RequestDate;
+                    existingRequest.DeadlineDate = requests.DeadlineDate;
+                    existingRequest.TotalTime = requests.TotalTime;
+                    existingRequest.Partner = requests.Partner;
+                    existingRequest.Project = requests.Project;
+                    existingRequest.RequestPerson = requests.RequestPerson;
+                    existingRequest.CreatePerson = requests.CreatePerson;
+                    existingRequest.SubjectOfRequest = requests.SubjectOfRequest;
+                    existingRequest.ContentsOfRequest = requests.ContentsOfRequest;
+                    existingRequest.Contact = requests.Contact;
+
+                    // Save the changes
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -794,53 +873,62 @@ namespace Tikkit_SolpacWeb.Controllers
             using (var package = new ExcelPackage())
             {
                 var worksheet = package.Workbook.Worksheets.Add("Requests");
+                worksheet.Cells.Style.Font.Name = "Times New Roman";
+                worksheet.Cells.Style.Font.Size = 11;
+
+
+                worksheet.Cells["A1:T1"].Merge = true;
+                worksheet.Cells["A1"].Value = "Báo cáo tháng";
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A1"].Style.Font.Bold = true;
+                worksheet.Cells["A1"].Style.Font.Size = 18;
 
                 // Tạo tiêu đề cho các cột
-                worksheet.Cells[1, 1].Value = "STT";
-                worksheet.Cells[1, 2].Value = "Ngày yêu cầu";
-                worksheet.Cells[1, 3].Value = "Ngày bắt đầu";
-                worksheet.Cells[1, 4].Value = "Ngày dự kiến";
-                worksheet.Cells[1, 5].Value = "Thời gian bắt đầu";
-                worksheet.Cells[1, 6].Value = "Thời gian kết thúc";
-                worksheet.Cells[1, 7].Value = "Ngày kết thúc";
-                worksheet.Cells[1, 8].Value = "Mức ưu tiên";
-                worksheet.Cells[1, 9].Value = "Trạng thái";
-                worksheet.Cells[1, 10].Value = "Người yêu cầu";
-                worksheet.Cells[1, 11].Value = "Người tạo yêu cầu";
-                worksheet.Cells[1, 12].Value = "Người hỗ trợ";
-                worksheet.Cells[1, 13].Value = "Công ty";
-                worksheet.Cells[1, 14].Value = "Dự án";
-                worksheet.Cells[1, 15].Value = "Tiêu đề yêu cầu";
-                worksheet.Cells[1, 16].Value = "Nội dung yêu cầu";
-                worksheet.Cells[1, 17].Value = "Nguyên nhân";
-                worksheet.Cells[1, 18].Value = "Nội dung hỗ trợ";
-                worksheet.Cells[1, 19].Value = "Tổng thời gian";
-                worksheet.Cells[1, 20].Value = "Liên hệ";
+                worksheet.Cells[3, 1].Value = "STT";
+                worksheet.Cells[3, 2].Value = "Ngày yêu cầu";
+                worksheet.Cells[3, 3].Value = "Ngày bắt đầu";
+                worksheet.Cells[3, 4].Value = "Ngày dự kiến";
+                worksheet.Cells[3, 5].Value = "Thời gian bắt đầu";
+                worksheet.Cells[3, 6].Value = "Thời gian kết thúc";
+                worksheet.Cells[3, 7].Value = "Ngày kết thúc";
+                worksheet.Cells[3, 8].Value = "Mức ưu tiên";
+                worksheet.Cells[3, 9].Value = "Trạng thái";
+                worksheet.Cells[3, 10].Value = "Người yêu cầu";
+                worksheet.Cells[3, 11].Value = "Người tạo yêu cầu";
+                worksheet.Cells[3, 12].Value = "Người hỗ trợ";
+                worksheet.Cells[3, 13].Value = "Công ty";
+                worksheet.Cells[3, 14].Value = "Dự án";
+                worksheet.Cells[3, 15].Value = "Tiêu đề yêu cầu";
+                worksheet.Cells[3, 16].Value = "Nội dung yêu cầu";
+                worksheet.Cells[3, 17].Value = "Nguyên nhân";
+                worksheet.Cells[3, 18].Value = "Nội dung hỗ trợ";
+                worksheet.Cells[3, 19].Value = "Tổng thời gian";
+                worksheet.Cells[3, 20].Value = "Liên hệ";
 
                 // Đổ dữ liệu vào bảng
                 for (int i = 0; i < requestsList.Count; i++)
                 {
                     var request = requestsList[i];
-                    worksheet.Cells[i + 2, 1].Value = i + 1;
-                    worksheet.Cells[i + 2, 2].Value = request.RequestDate.ToString("dd-MM");
-                    worksheet.Cells[i + 2, 3].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("dd-MM") : "";
-                    worksheet.Cells[i + 2, 4].Value = request.ExpectedDate.HasValue ? request.ExpectedDate.Value.ToString("dd-MM") : "";
-                    worksheet.Cells[i + 2, 5].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("HH:mm:ss") : "";
-                    worksheet.Cells[i + 2, 6].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("HH:mm:ss") : "";
-                    worksheet.Cells[i + 2, 7].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("dd-MM") : "";
-                    worksheet.Cells[i + 2, 8].Value = request.Priority;
-                    worksheet.Cells[i + 2, 9].Value = request.Status;
-                    worksheet.Cells[i + 2, 10].Value = request.RequestPerson;
-                    worksheet.Cells[i + 2, 11].Value = request.CreatePerson;
-                    worksheet.Cells[i + 2, 12].Value = request.Supporter;
-                    worksheet.Cells[i + 2, 13].Value = request.Partner;
-                    worksheet.Cells[i + 2, 14].Value = request.Project;
-                    worksheet.Cells[i + 2, 15].Value = request.SubjectOfRequest;
-                    worksheet.Cells[i + 2, 16].Value = request.ContentsOfRequest;
-                    worksheet.Cells[i + 2, 17].Value = request.Reason;
-                    worksheet.Cells[i + 2, 18].Value = request.SupportContent;
-                    worksheet.Cells[i + 2, 19].Value = request.TotalTime;
-                    worksheet.Cells[i + 2, 20].Value = request.Contact;
+                    worksheet.Cells[i + 4, 1].Value = i + 1;
+                    worksheet.Cells[i + 4, 2].Value = request.RequestDate.ToString("dd-MM");
+                    worksheet.Cells[i + 4, 3].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("dd-MM") : "";
+                    worksheet.Cells[i + 4, 4].Value = request.ExpectedDate.HasValue ? request.ExpectedDate.Value.ToString("dd-MM") : "";
+                    worksheet.Cells[i + 4, 5].Value = request.StartDate.HasValue ? request.StartDate.Value.ToString("HH:mm:ss") : "";
+                    worksheet.Cells[i + 4, 6].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("HH:mm:ss") : "";
+                    worksheet.Cells[i + 4, 7].Value = request.EndDate.HasValue ? request.EndDate.Value.ToString("dd-MM") : "";
+                    worksheet.Cells[i + 4, 8].Value = request.Priority;
+                    worksheet.Cells[i + 4, 9].Value = request.Status;
+                    worksheet.Cells[i + 4, 10].Value = request.RequestPerson;
+                    worksheet.Cells[i + 4, 11].Value = request.CreatePerson;
+                    worksheet.Cells[i + 4, 12].Value = request.Supporter;
+                    worksheet.Cells[i + 4, 13].Value = request.Partner;
+                    worksheet.Cells[i + 4, 14].Value = request.Project;
+                    worksheet.Cells[i + 4, 15].Value = request.SubjectOfRequest;
+                    worksheet.Cells[i + 4, 16].Value = request.ContentsOfRequest;
+                    worksheet.Cells[i + 4, 17].Value = request.Reason;
+                    worksheet.Cells[i + 4, 18].Value = request.SupportContent;
+                    worksheet.Cells[i + 4, 19].Value = request.TotalTime.Value.ToString(@"hh\:mm\:ss");
+                    worksheet.Cells[i + 4, 20].Value = request.Contact;
                 }
 
                 // Ghi file Excel vào MemoryStream
@@ -880,7 +968,7 @@ namespace Tikkit_SolpacWeb.Controllers
                         ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                         int rowCount = worksheet.Dimension.Rows;
 
-                        for (int row = 2; row <= rowCount; row++)
+                        for (int row = 4; row <= rowCount; row++)
                         {
                             // Parse start date and time
                             string startDate = worksheet.Cells[row, 3].Value?.ToString();

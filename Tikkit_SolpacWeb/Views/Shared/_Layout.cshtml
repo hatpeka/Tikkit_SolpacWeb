@@ -97,11 +97,13 @@
                 <a class="text-black" asp-area="" asp-controller="Partners" asp-action="Index"><img src="~/images/group.svg" alt="Partner" width="18" height="23.6"></a>
                 <a class="text-black" asp-area="" asp-controller="Projects" asp-action="Index"><i class="bi bi-folder-fill"></i></a>
                 <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Create"><i class="bi bi-plus-square-fill"></i></a>
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-table"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-exclamation-square-fill"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Report" asp-route-id=""><i class="bi bi-table"></i></a>
             }
             else if (userRole == "Staff")
             {
-                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-table"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Index" asp-route-id=""><i class="bi bi-exclamation-square-fill"></i></a>
+                <a class="text-black" asp-area="" asp-controller="Requests" asp-action="Report" asp-route-id=""><i class="bi bi-table"></i></a>
             }
             else if (userRole == "Client")
             {
