@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -41,6 +43,22 @@ namespace Tikkit_SolpacWeb.Controllers
             return currentUser;
         }
 
+        public static string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            }
+        }
+
+        public string GenerateTempPassword()
+        {
+            var random = new Random();
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Range(1, 8).Select(_ => chars[random.Next(chars.Length)]).ToArray());
+        }
+
         public IActionResult UserAction()
         {
             var currentUser = GetCurrentUser();
@@ -68,7 +86,7 @@ namespace Tikkit_SolpacWeb.Controllers
         public IActionResult Login(string email, string password)
         {
             var User = _context.Users.FirstOrDefault(u => u.Email == email);
-            if (User != null && User.Email == email && User.Password == password && User.Status == "Working")
+            if (User != null && User.Email == email && User.Password == HashPassword(password) && User.Status == "Working")
             {
                 HttpContext.Session.SetInt32("UserId", User.ID);
                 HttpContext.Session.SetString("UserEmail", User.Email);
@@ -79,19 +97,18 @@ namespace Tikkit_SolpacWeb.Controllers
 
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 return RedirectToAction("Index", "Requests");
-
             }
             if (User == null)
             {
                 ModelState.AddModelError("Email", "Email không chính xác");
                 return View("Login");
             }
-            if (User != null && User.Password != password)
+            if (User != null && HashPassword(password) != User.Password)
             {
                 ModelState.AddModelError("Password", "Mật khẩu không chính xác");
                 return View("Login");
             }
-            if (User != null && User.Password == password && User.Status == "Stopped")
+            if (User != null && HashPassword(password) == User.Password && User.Status == "Stopped")
             {
                 ModelState.AddModelError("Password", "Tài khoản đang bị khóa");
                 return View("Login");
@@ -114,17 +131,21 @@ namespace Tikkit_SolpacWeb.Controllers
                 return View();
             }
 
-            var user = _context.Users
-                .FirstOrDefault(u => u.Email == email);
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
 
             if (user == null)
             {
                 ModelState.AddModelError("Email", "Không tìm thấy người dùng với email này");
                 return View();
             }
+            var tempPassword = GenerateTempPassword();
 
-            string emailSubject = $"Mật khẩu ứng dụng";
-            string emailMessage = $"Chào {user.Name}, mật khẩu của bạn là {user.Password}";
+            user.Password = HashPassword(tempPassword);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            string emailSubject = $"Mật khẩu ứng dụng tạm thời";
+            string emailMessage = $"Chào {user.Name}, mật khẩu tạm thời của bạn là {tempPassword}. Vui lòng đăng nhập và thay đổi mật khẩu của bạn ngay lập tức.";
             await _emailSender.SendEmailAsync(email, emailSubject, emailMessage);
 
             return RedirectToAction("Login");
@@ -172,6 +193,7 @@ namespace Tikkit_SolpacWeb.Controllers
             {
                 var partner = partners.FirstOrDefault(p => p.PartnerID == users.PartnerID);
                 users.Partner = partner.Name;
+                users.Password = HashPassword(users.Password);
                 users.RePassword = null;
                 _context.Add(users);
                 await _context.SaveChangesAsync();
@@ -363,17 +385,14 @@ namespace Tikkit_SolpacWeb.Controllers
             }
 
             // Verify the current password
-            if (users.CurrentPassword != currentUser.Password)
+            if (HashPassword(users.CurrentPassword) != currentUser.Password)
             {
                 ModelState.AddModelError("CurrentPassword", "Mật khẩu hiện tại không chính xác.");
                 return View(users);
             }
-            if (users.NewPassword != users.ConfirmPassword)
-            {
-                return View(users);
-            }
-            // Save the new password as plain text
-            currentUser.Password = users.NewPassword;
+
+            // Save the new password as hashed
+            currentUser.Password = HashPassword(users.NewPassword);
             _context.Update(currentUser);
             await _context.SaveChangesAsync();
 
