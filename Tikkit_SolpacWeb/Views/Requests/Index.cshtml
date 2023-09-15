@@ -82,7 +82,6 @@
     
 <br />
     <div class="d-flex justify-content-center">
-        <a class="btn btn-outline-info mx-1" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
         <button id="importButton" class="btn btn-primary mx-1">Nhập file</button>
         @if (ViewBag.UserRole != "Staff")
         {

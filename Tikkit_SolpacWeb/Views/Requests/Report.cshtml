@@ -61,7 +61,7 @@
             </div>
         </div>
         <div class="col-12 text-center">
-            <a class="btn btn-outline-info mx-1" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Xuất file</a>
+            <a class="btn btn-outline-info mx-1" asp-action="ExportToExcel" asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, k => k.Value.ToString()))">Tạo báo cáo</a>
             <button class="btn btn-outline-success my-2 my-sm-0 mx-2" type="submit">Tìm kiếm</button>
             <a class="btn btn-outline-danger my-2 my-sm-0 mx-2" asp-action="Index" asp-controller="Requests">Hủy</a>
         </div>
